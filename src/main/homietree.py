@@ -21,6 +21,12 @@ class Node:
     def children(self):
         return self.nodes.values()
 
+    def debug(self, indent=''):
+        properties = ', '.join(["%s=%s" % (attr, self.attributes[attr]) for attr in self.attributes])
+        print("%s # %s (%s) => %s" % (indent, self.id, properties, self.value))
+        for child_id in self.nodes:
+            self.nodes[child_id].debug(indent + '    ')
+
 
 class HomieTree:
     def __init__(self):

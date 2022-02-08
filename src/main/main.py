@@ -40,6 +40,8 @@ with open(CONFIGURATION, 'r') as f:
     MQTT_USER = config['mqtt']['user']
     MQTT_PASS = config['mqtt']['password']
 
+    DEVICES_CONFIG = config['devices']
+
 ########################################################################################################################
 
 tree = HomieTree()
@@ -57,7 +59,9 @@ def on_message(client, userdata, msg):
 
 
 def list_devices():
+    # tree.tree().debug('')
     devices = Devices(tree)
+    devices.enrich(DEVICES_CONFIG)
     return devices.to_json()
 
 

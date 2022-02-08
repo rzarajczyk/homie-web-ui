@@ -5,19 +5,68 @@
     <title>Smart Home</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="index.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏠</text></svg>">
 </head>
 <body>
+
+<div class="contatiner">
+
     <nav>
         <div class="nav-wrapper">
             <a href="#" class="brand-logo">Smart Home</a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
-                <li><a href="sass.html">Sass</a></li>
-                <li><a href="badges.html">Components</a></li>
-                <li><a href="collapsible.html">JavaScript</a></li>
+<!--                <li><a href="sass.html">Sass</a></li>-->
+<!--                <li><a href="badges.html">Components</a></li>-->
+<!--                <li><a href="collapsible.html">JavaScript</a></li>-->
             </ul>
         </div>
     </nav>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <div id="main">
+        <div class="row" id="devices">
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+<script src="index.js"></script>
+
+<script>
+    const deviceTemplate = `
+            <div class="col s6 m4 l3 xl2">
+                <div class="card device-card">
+                    <div class="card-image center-align">
+                        <img class="activator" src="{{icon}}">
+                    </div>
+                    <div class="card-content">
+                        <span class="card-title truncate">{{name}}</span>
+                        <div class="properties">
+                            <table>
+                                <tbody>
+                                    {{#each properties}}
+                                        <tr>
+                                            <td>{{this.name}}</td>
+                                            <td>{{this.value}} {{this.unit}}</td>
+                                        </tr>
+                                    {{/each}}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-reveal">
+                        <span class="card-title"><i class="material-icons right">close</i><span class="actual-title">{{name}}</span></span>
+                        <div>
+                            <table><tbody><tr><td>id</td><td>{{id}}</td></tr></tbody></table>
+                        </div>
+                    </div>
+                </div>
+            </div>`
+</script>
+
 </body>
 </html>

@@ -1,0 +1,20 @@
+.device-card .card-title {
+    font-size: 16px;
+}
+
+.device-card .card-image img {
+    width: auto;
+    height: 200px;
+    display: inline;
+}
+
+.device-card .properties {
+    height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+.device-card .card-reveal span.actual-title {
+    display: inline;
+    margin-right: 25px;
+
+}

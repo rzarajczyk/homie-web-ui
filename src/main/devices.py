@@ -18,12 +18,26 @@ class Device:
         self.id: str = id
         self.name: str = None
         self.properties: list[Property] = []
+        self.icon = 'https://images.sftcdn.net/images/t_app-logo-xl,f_auto/p/b038a7e4-9b25-11e6-a4ee-00163ed833e7/12078914/android-device-manager-icon.png'
+        self.hidden = False
 
 
 class Devices:
     def __init__(self, tree: HomieTree):
         self.devices = []
-        self.parse(tree)
+        for node in tree.tree().children():
+            self.devices += self.parse_device_node(node)
+
+    def enrich(self, config):
+        for device in self.devices:
+            if device.id in config:
+                self.enrich_device(device, config[device.id])
+
+    def enrich_device(self, device, config):
+        if 'icon' in config:
+            device.icon = config['icon']
+        if 'hidden' in config:
+            device.hidden = config['hidden']
 
     def to_json(self):
         result = []
@@ -42,17 +56,14 @@ class Devices:
             result_device = {
                 'id': device.id,
                 'name': device.name,
+                'icon': device.icon,
                 'properties': properties
             }
-            result.append(result_device)
+            if not device.hidden:
+                result.append(result_device)
         return {
             'devices': result
         }
-
-    def parse(self, tree: HomieTree):
-        self.devices = []
-        for node in tree.tree().children():
-            self.devices += self.parse_device_node(node)
 
     def parse_device_node(self, node: Node):
         if node.id == 'homey':
@@ -71,6 +82,8 @@ class Devices:
             property_node = node.find_child(expected_property)
             if property_node is not None:
                 prop = self.parse_property_node(property_node)
+                if prop.name.startswith("%s - " % device.name):
+                    prop.name = prop.name.replace("%s - " % device.name, '')
                 device.properties.append(prop)
         for expected_sub_node in node.attributes.get('$nodes', '').split(','):
             sub_node = node.find_child(expected_sub_node)
