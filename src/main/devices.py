@@ -11,6 +11,7 @@ class Property:
         self.format = None
         self.retained = None
         self.settable = None
+        self.path = None
 
 
 class Device:
@@ -50,7 +51,8 @@ class Devices:
                     'value': prop.value,
                     'unit': prop.unit,
                     'datatype': prop.datatype,
-                    'format': prop.format
+                    'format': prop.format,
+                    'path': prop.path
                 }
                 properties.append(result_prop)
             result_device = {
@@ -65,30 +67,31 @@ class Devices:
             'devices': result
         }
 
-    def parse_device_node(self, node: Node):
+    def parse_device_node(self, node: Node, path: str = ''):
         if node.id == 'homey':
             result = []
             for node in node.children():
-                result += self.parse_device_node(node)
+                result += self.parse_device_node(node, 'homey.')
             return result
         else:
             device = Device(node.id)
             device.name = node.attributes.get('$name', None)
-            self.parse_device_sub_nodes_and_properties(device, node)
+            self.parse_device_sub_nodes_and_properties(device, node, path + node.id)
             return [device]
 
-    def parse_device_sub_nodes_and_properties(self, device, node):
+    def parse_device_sub_nodes_and_properties(self, device, node, path):
         for expected_property in node.attributes.get('$properties', '').split(','):
             property_node = node.find_child(expected_property)
             if property_node is not None:
                 prop = self.parse_property_node(property_node)
                 if prop.name.startswith("%s - " % device.name):
                     prop.name = prop.name.replace("%s - " % device.name, '')
+                prop.path = "%s.%s" % (path, prop.id)
                 device.properties.append(prop)
         for expected_sub_node in node.attributes.get('$nodes', '').split(','):
             sub_node = node.find_child(expected_sub_node)
             if sub_node is not None:
-                self.parse_device_sub_nodes_and_properties(device, sub_node)
+                self.parse_device_sub_nodes_and_properties(device, sub_node, "%s.%s" % (path, expected_sub_node))
 
     def parse_property_node(self, node: Node):
         prop = Property(node.id)
