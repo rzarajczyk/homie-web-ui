@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import shutil
@@ -8,7 +9,7 @@ import yaml
 
 from devices import Devices
 from homietree import HomieTree
-from server import start_server
+from server import start_server, JsonGet, JsonPost, Redirect, StaticResources
 
 ROOT = os.environ.get('APP_ROOT', ".")
 
@@ -24,6 +25,7 @@ with open(LOGGER_CONFIGURATION, 'r') as f:
     logging_config.dictConfig(config)
 
 LOGGER = logging.getLogger("main")
+LOGGER.info("Starting application!")
 
 ########################################################################################################################
 # application configuration
@@ -55,14 +57,8 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     topic = msg.topic
     payload = msg.payload.decode(encoding='UTF-8')
+    LOGGER.info("Received event: %-70s | %s" % (topic, payload))
     tree.accept_message(topic, payload)
-
-
-def list_devices():
-    # tree.tree().debug('')
-    devices = Devices(tree)
-    devices.enrich(DEVICES_CONFIG)
-    return devices.to_json()
 
 
 client = mqtt.Client()
@@ -72,12 +68,31 @@ client.on_message = on_message
 
 client.connect(MQTT_HOST, MQTT_PORT)
 
+
+def list_devices(params):
+    # tree.tree().debug('')
+    devices = Devices(tree)
+    devices.enrich(DEVICES_CONFIG)
+    return devices.to_json()
+
+
+def set_property(params, payload):
+    payload_json = json.loads(payload)
+    topic = "homie/%s/set" % payload_json['path'].replace('.', '/')
+    value = payload_json['value']
+
+    LOGGER.info("PUBLISHING:     %-70s | %s" % (topic, value))
+    client.publish(topic, value)
+
+
 client.loop_start()
 
-GET_ACTIONS = {
-    '/devices': list_devices
-}
-POST_ACTIONS = {}
+ACTIONS = [
+    JsonGet('/devices', list_devices),
+    JsonPost('/set-property', set_property),
+    Redirect('/', '/index.html'),
+    StaticResources('/', './src/web')
+]
 
-server = start_server(8080, GET_ACTIONS, POST_ACTIONS)
+server = start_server(8080, ACTIONS)
 server.serve_forever()

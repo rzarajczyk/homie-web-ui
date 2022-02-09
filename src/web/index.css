@@ -16,5 +16,8 @@
 .device-card .card-reveal span.actual-title {
     display: inline;
     margin-right: 25px;
+}
 
+.device-card .card-reveal table {
+    margin-bottom: 25px;
 }

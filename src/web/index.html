@@ -33,6 +33,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+<script src="deduplicate.js"></script>
 <script src="index.js"></script>
 
 <script>
@@ -65,6 +66,37 @@
                         <span class="card-title"><i class="material-icons right">close</i><span class="actual-title">{{name}}</span></span>
                         <div>
                             <table><tbody><tr><td>id</td><td>{{id}}</td></tr></tbody></table>
+                            <div class="property-setters">
+                            {{#each properties}}
+                                {{#if this.settable}}
+                                    {{#if (eq this.datatype 'float')}}
+                                        <input id="{{this.path}}" type="text" value="{{this.value}}">
+                                        <label for="{{this.path}}">{{this.name}}</label>
+                                    {{else if (eq this.datatype 'integer')}}
+                                        <input id="{{this.path}}" type="text" value="{{this.value}}">
+                                        <label for="{{this.path}}">{{this.name}}</label>
+                                    {{else if (eq this.datatype 'enum')}}
+                                        <div class="input-field">
+                                        <select id="{{this.path}}">
+                                            {{#each (split this.format ',')}}
+                                                <option value="{{this}}">{{this}}</option>
+                                            {{/each}}
+                                        </select>
+                                        <label>{{this.name}}</label>
+                                        </div>
+                                    {{else if (eq this.datatype 'boolean')}}
+                                        <label>
+                                            <input type="checkbox" id="{{this.path}}" class="filled-in">
+                                            <span>{{this.name}}</span>
+                                        </label>
+                                    {{else}}
+                                        <div>
+                                            Unsupported property: {{this.name}} type {{this.datatype}} (value {{this.value}})
+                                        </div>
+                                    {{/if}}
+                                {{/if}}
+                            {{/each}}
+                            </div>
                         </div>
                     </div>
                 </div>

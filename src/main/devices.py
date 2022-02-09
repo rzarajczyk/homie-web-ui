@@ -52,6 +52,8 @@ class Devices:
                     'unit': prop.unit,
                     'datatype': prop.datatype,
                     'format': prop.format,
+                    'settable': prop.settable == "true",
+                    'retained': prop.retained == "true",
                     'path': prop.path
                 }
                 properties.append(result_prop)
@@ -99,5 +101,7 @@ class Devices:
         prop.unit = node.attributes.get('$unit', None)
         prop.format = node.attributes.get('$format', None)
         prop.datatype = node.attributes.get('$datatype', None)
+        prop.settable = node.attributes.get('$settable', None)
+        prop.retained = node.attributes.get('$retained', None)
         prop.value = node.value
         return prop
