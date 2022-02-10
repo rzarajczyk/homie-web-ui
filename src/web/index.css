@@ -6,6 +6,7 @@
     width: auto;
     height: 200px;
     display: inline;
+    cursor: pointer;
 }
 
 .device-card .properties {

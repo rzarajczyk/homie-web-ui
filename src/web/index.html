@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link rel="stylesheet" href="index.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏠</text></svg>">
+    <link rel="icon"
+          href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏠</text></svg>">
 </head>
 <body>
 
@@ -69,31 +70,33 @@
                             <div class="property-setters">
                             {{#each properties}}
                                 {{#if this.settable}}
+                                    <div class="input-field">
                                     {{#if (eq this.datatype 'float')}}
                                         <input id="{{this.path}}" type="text" value="{{this.value}}">
-                                        <label for="{{this.path}}">{{this.name}}</label>
+                                        <label for="{{this.path}}" class="active">{{this.name}}</label>
                                     {{else if (eq this.datatype 'integer')}}
                                         <input id="{{this.path}}" type="text" value="{{this.value}}">
-                                        <label for="{{this.path}}">{{this.name}}</label>
+                                        <label for="{{this.path}}" class="active">{{this.name}}</label>
                                     {{else if (eq this.datatype 'enum')}}
-                                        <div class="input-field">
                                         <select id="{{this.path}}">
                                             {{#each (split this.format ',')}}
-                                                <option value="{{this}}">{{this}}</option>
+                                                <option value="{{this}}" {{#if (eq this ../value)}}selected{{/if}}>{{this}}</option>
                                             {{/each}}
                                         </select>
                                         <label>{{this.name}}</label>
-                                        </div>
                                     {{else if (eq this.datatype 'boolean')}}
+                                        <div>
                                         <label>
-                                            <input type="checkbox" id="{{this.path}}" class="filled-in">
+                                            <input type="checkbox" id="{{this.path}}" class="filled-in" {{#if (eq this.value 'true')}}checked{{/if}} value="true">
                                             <span>{{this.name}}</span>
                                         </label>
+                                        </div>
                                     {{else}}
                                         <div>
                                             Unsupported property: {{this.name}} type {{this.datatype}} (value {{this.value}})
                                         </div>
                                     {{/if}}
+                                    </div>
                                 {{/if}}
                             {{/each}}
                             </div>

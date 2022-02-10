@@ -8,8 +8,9 @@ $(() => {
         let element = $(this)
         const data = {
             'path': element.attr('id'),
-            'value': element.val()
+            'value': element.is("input[type='checkbox']") ? element.is(":checked") : element.val()
         }
+        console.log(data)
         $.post('/set-property', JSON.stringify(data), (response) => {
             console.log(`Async call to set-property finished with response ${response}`)
         }, "json")
