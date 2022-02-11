@@ -31,10 +31,36 @@
 
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<div id="chart-modal" class="modal modal-fixed-footer no-autoinit">
+    <div class="modal-content">
+        <h4>History: <span id="chart-metric-name"></span></h4>
+        <div>
+            <img id="chart-img" src="">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div id="chart-history-selector">
+            <div class="input-field inline">
+                <input id="chart-history-amount" type="number" class="" value="60" min="1">
+                <label for="chart-history-amount">Show last</label>
+            </div>
+            <div class="input-field inline">
+                <select id="chart-history-units">
+                    <option value="minutes" selected>minutes</option>
+                    <option value="hours">hours</option>
+                    <option value="days">days</option>
+                </select>
+            </div>
+        </div>
+        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
 <script src="deduplicate.js"></script>
+<script src="graph.js"></script>
 <script src="index.js"></script>
 
 <script>
@@ -53,7 +79,7 @@
                                         <tr>
                                             <td>{{this.name}}</td>
                                             <td>
-                                                <a href="http://192.168.86.100:9080/render/?width=1024&height=768&target=keepLastValue({{path}})&from=-60minutes&_salt=1644355685.803" target="_blank">
+                                                <a class="chart-trigger" data-path="{{this.path}}" data-metric-name="{{this.name}}">
                                                     {{this.value}} {{this.unit}}
                                                 </a>
                                             </td>

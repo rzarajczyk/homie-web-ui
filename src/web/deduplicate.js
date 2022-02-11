@@ -1,26 +1,18 @@
 $(() => {
     let deduplicate_timeout = null
-    //
-    // function deduplicate(fn) {
-    //     if (deduplicate_timeout == null) {
-    //         let self = this
-    //         deduplicate_timeout = setTimeout(() => {
-    //             fn.call(self)
-    //             deduplicate_timeout = null
-    //         }, 50)
-    //     }
-    // }
 
-    Function.prototype.deduplicate = function () {
+    Function.prototype.deduplicate = function (timeout = 50) {
         let original = this
         return function () {
-            if (deduplicate_timeout == null) {
-                let originalThis = this
-                deduplicate_timeout = setTimeout(() => {
-                    original.call(originalThis)
-                    deduplicate_timeout = null
-                }, 50)
+            let originalThis = this
+            let originalArguments = arguments
+            if (deduplicate_timeout != null) {
+                clearTimeout(deduplicate_timeout)
             }
+            deduplicate_timeout = setTimeout(() => {
+                original.apply(originalThis, originalArguments)
+                deduplicate_timeout = null
+            }, timeout)
         }
     }
 })
