@@ -81,6 +81,11 @@ def set_property(params, payload):
     topic = "homie/%s/set" % payload_json['path'].replace('.', '/')
     value = payload_json['value']
 
+    if value is False:
+        value = "false"
+    elif value is True:
+        value = "true"
+
     LOGGER.info("PUBLISHING:     %-70s | %s" % (topic, value))
     client.publish(topic, value)
 
