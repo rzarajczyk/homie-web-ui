@@ -27,6 +27,12 @@
     cursor: pointer;
 }
 
+.device-card .commands-setters a.btn {
+    display: block;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
 #chart-modal .modal-footer {
     height: 90px;
 }

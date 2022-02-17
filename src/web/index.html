@@ -63,73 +63,93 @@
 <script src="graph.js"></script>
 <script src="index.js"></script>
 
-<script>
-    const deviceTemplate = `
-            <div class="col s6 m4 l3 xl2">
-                <div class="card device-card">
-                    <div class="card-image center-align">
-                        <img class="activator" src="{{icon}}">
-                    </div>
-                    <div class="card-content">
-                        <span class="card-title truncate">{{name}}</span>
-                        <div class="properties">
-                            <table>
-                                <tbody>
-                                    {{#each properties}}
-                                        <tr>
-                                            <td>{{this.name}}</td>
-                                            <td>
-                                                <a class="chart-trigger" data-path="{{this.path}}" data-metric-name="{{this.name}}">
-                                                    {{this.value}} {{this.unit}}
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    {{/each}}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="card-reveal">
-                        <span class="card-title"><i class="material-icons right">close</i><span class="actual-title">{{name}}</span></span>
-                        <div>
-                            <table><tbody><tr><td>id</td><td>{{id}}</td></tr></tbody></table>
-                            <div class="property-setters">
-                            {{#each properties}}
-                                {{#if this.settable}}
-                                    <div class="input-field">
-                                    {{#if (eq this.datatype 'float')}}
-                                        <input id="{{this.path}}" type="text" value="{{this.value}}">
-                                        <label for="{{this.path}}" class="active">{{this.name}}</label>
-                                    {{else if (eq this.datatype 'integer')}}
-                                        <input id="{{this.path}}" type="text" value="{{this.value}}">
-                                        <label for="{{this.path}}" class="active">{{this.name}}</label>
-                                    {{else if (eq this.datatype 'enum')}}
-                                        <select id="{{this.path}}">
-                                            {{#each (split this.format ',')}}
-                                                <option value="{{this}}" {{#if (eq this ../value)}}selected{{/if}}>{{this}}</option>
-                                            {{/each}}
-                                        </select>
-                                        <label>{{this.name}}</label>
-                                    {{else if (eq this.datatype 'boolean')}}
-                                        <div>
-                                        <label>
-                                            <input type="checkbox" id="{{this.path}}" class="filled-in" {{#if (eq this.value 'true')}}checked{{/if}} value="true">
-                                            <span>{{this.name}}</span>
-                                        </label>
-                                        </div>
-                                    {{else}}
-                                        <div>
-                                            Unsupported property: {{this.name}} type {{this.datatype}} (value {{this.value}})
-                                        </div>
-                                    {{/if}}
-                                    </div>
-                                {{/if}}
-                            {{/each}}
+<script id="device-template" type="x-handlebars-template">
+    <div class="col s6 m4 l3 xl2">
+        <div class="card device-card">
+            <div class="card-image center-align">
+                <img class="activator" src="{{icon}}">
+            </div>
+            <div class="card-content">
+                <span class="card-title truncate">{{name}}</span>
+                <div class="properties">
+                    <table>
+                        <tbody>
+                        {{#each properties}}
+                        <tr>
+                            <td>{{this.name}}</td>
+                            <td>
+                                <a class="chart-trigger" data-path="{{this.path}}" data-metric-name="{{this.name}}">
+                                    {{this.value}} {{this.unit}}
+                                </a>
+                            </td>
+                        </tr>
+                        {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-reveal">
+                <span class="card-title"><i class="material-icons right">close</i><span
+                        class="actual-title">{{name}}</span></span>
+                <div>
+                    <table>
+                        <tbody>
+                        <tr>
+                            <td>id</td>
+                            <td>{{id}}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="property-setters">
+                        {{#each properties}}
+                        {{#if this.settable}}
+                        <div class="input-field">
+                            {{#if (eq this.datatype 'float')}}
+                            <input id="{{this.path}}" type="text" value="{{this.value}}">
+                            <label for="{{this.path}}" class="active">{{this.name}}</label>
+                            {{else if (eq this.datatype 'integer')}}
+                            <input id="{{this.path}}" type="text" value="{{this.value}}">
+                            <label for="{{this.path}}" class="active">{{this.name}}</label>
+                            {{else if (eq this.datatype 'enum')}}
+                            <select id="{{this.path}}">
+                                {{#each (split this.format ',')}}
+                                <option value="{{this}}" {{#if (eq this ..
+                                /value)}}selected{{/if}}>{{this}}</option>
+                                {{/each}}
+                            </select>
+                            <label>{{this.name}}</label>
+                            {{else if (eq this.datatype 'boolean')}}
+                            <div>
+                                <label>
+                                    <input type="checkbox" id="{{this.path}}" class="filled-in" {{#if (eq this.value
+                                    'true')}}checked{{/if}} value="true">
+                                    <span>{{this.name}}</span>
+                                </label>
                             </div>
+                            {{else}}
+                            <div>
+                                Unsupported property: {{this.name}} type {{this.datatype}} (value {{this.value}})
+                            </div>
+                            {{/if}}
                         </div>
+                        {{/if}}
+                        {{/each}}
+                    </div>
+                    <div class="commands-setters">
+                        {{#each commands}}
+                            {{#if (eq this.datatype 'boolean')}}
+                                <a class="waves-effect waves-light btn" id="{{this.path}}"><i class="material-icons left">{{this.icon}}</i>{{this.name}}</a>
+                            {{else}}
+                            <div>
+                                Unsupported property: {{this.name}} type {{this.datatype}} (value {{this.value}})
+                            </div>
+                            {{/if}}
+                        {{/each}}
                     </div>
                 </div>
-            </div>`
+            </div>
+        </div>
+    </div>
 </script>
 
 </body>

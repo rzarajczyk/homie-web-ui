@@ -14,6 +14,18 @@ class Property:
         self.path = None
 
 
+class Command:
+    def __init__(self, id):
+        self.id = id
+        self.name = None
+        self.unit = None
+        self.datatype = None
+        self.value = None
+        self.format = None
+        self.path = None
+        self.icon = None
+
+
 class Device:
     def __init__(self, id):
         self.id: str = id
@@ -21,6 +33,7 @@ class Device:
         self.properties: list[Property] = []
         self.icon = 'https://images.sftcdn.net/images/t_app-logo-xl,f_auto/p/b038a7e4-9b25-11e6-a4ee-00163ed833e7/12078914/android-device-manager-icon.png'
         self.hidden = False
+        self.commands: list[Command] = []
 
 
 class Devices:
@@ -35,15 +48,46 @@ class Devices:
                 self.enrich_device(device, config[device.id])
 
     def enrich_device(self, device, config):
+        for prop in list(device.properties):
+            if prop.settable == "true" and prop.retained != "true":
+                command = Command(prop.id)
+                command.value = prop.value
+                command.name = prop.name
+                command.id = prop.id
+                command.path = prop.path
+                command.unit = prop.unit
+                command.datatype = prop.datatype
+                command.format = prop.format
+                device.commands.append(command)
+                device.properties.remove(prop)
         if 'icon' in config:
             device.icon = config['icon']
         if 'hidden' in config:
             device.hidden = config['hidden']
+        if 'commands' in config:
+            for command_id in config['commands']:
+                for device_command in device.commands:
+                    if device_command.id == command_id:
+                        if 'icon' in config['commands'][command_id]:
+                            device_command.icon = config['commands'][command_id]['icon']
 
     def to_json(self):
         result = []
         for device in self.devices:
             properties = []
+            commands = []
+            for command in device.commands:
+                result_command = {
+                    'id': command.id,
+                    'name': command.name,
+                    'value': command.value,
+                    'unit': command.unit,
+                    'datatype': command.datatype,
+                    'format': command.format,
+                    'path': command.path,
+                    'icon': command.icon
+                }
+                commands.append(result_command)
             for prop in device.properties:
                 result_prop = {
                     'id': prop.id,
@@ -61,7 +105,8 @@ class Devices:
                 'id': device.id,
                 'name': device.name,
                 'icon': device.icon,
-                'properties': properties
+                'properties': properties,
+                'commands': commands
             }
             if not device.hidden:
                 result.append(result_device)

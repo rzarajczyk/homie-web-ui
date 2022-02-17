@@ -1,6 +1,7 @@
 $(() => {
     Handlebars.registerHelper('eq', (value1, value2) => value1 == value2)
     Handlebars.registerHelper('split', (string, separator) => string.split(separator))
+    const deviceTemplate = $('#device-template').html()
     const template = Handlebars.compile(deviceTemplate)
 
     var elems = document.querySelectorAll('#chart-modal');
