@@ -1,3 +1,5 @@
+from enum import Enum, auto
+
 from homietree import Node, HomieTree
 
 
@@ -14,16 +16,26 @@ class Property:
         self.path = None
 
 
+class CommandPosition(Enum):
+    DEFAULT = auto()
+    SMALLER = auto()
+    LEFT_HALF = auto()
+    RIGHT_HALF = auto()
+
+class CommandDisplay(Enum):
+    DEFAULT = auto()
+    ICON_ONLY = auto()
+
+
 class Command:
     def __init__(self, id):
         self.id = id
         self.name = None
-        self.unit = None
-        self.datatype = None
-        self.value = None
-        self.format = None
         self.path = None
         self.icon = None
+        self.position = CommandPosition.DEFAULT
+        self.display = CommandDisplay.DEFAULT
+        self.header = None
 
 
 class Device:
@@ -49,15 +61,10 @@ class Devices:
 
     def enrich_device(self, device, config):
         for prop in list(device.properties):
-            if prop.settable == "true" and prop.retained != "true":
+            if prop.settable == "true" and prop.retained != "true" and prop.datatype == 'boolean':
                 command = Command(prop.id)
-                command.value = prop.value
                 command.name = prop.name
-                command.id = prop.id
                 command.path = prop.path
-                command.unit = prop.unit
-                command.datatype = prop.datatype
-                command.format = prop.format
                 device.commands.append(command)
                 device.properties.remove(prop)
         if 'icon' in config:
@@ -70,6 +77,14 @@ class Devices:
                     if device_command.id == command_id:
                         if 'icon' in config['commands'][command_id]:
                             device_command.icon = config['commands'][command_id]['icon']
+                        if 'position' in config['commands'][command_id]:
+                            device_command.position = CommandPosition[config['commands'][command_id]['position']]
+                        if 'display' in config['commands'][command_id]:
+                            device_command.display = CommandDisplay[config['commands'][command_id]['display']]
+                        if 'header' in config['commands'][command_id]:
+                            device_command.header = config['commands'][command_id]['header']
+            order = [command_id for command_id in config['commands']]
+            device.commands.sort(key=lambda cmd: order.index(cmd.id) if cmd.id in order else 999999)
 
     def to_json(self):
         result = []
@@ -80,12 +95,11 @@ class Devices:
                 result_command = {
                     'id': command.id,
                     'name': command.name,
-                    'value': command.value,
-                    'unit': command.unit,
-                    'datatype': command.datatype,
-                    'format': command.format,
                     'path': command.path,
-                    'icon': command.icon
+                    'icon': command.icon,
+                    'position': command.position.name,
+                    'display': command.display.name,
+                    'header': command.header
                 }
                 commands.append(result_command)
             for prop in device.properties:

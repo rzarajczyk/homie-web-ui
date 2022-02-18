@@ -137,13 +137,15 @@
                     </div>
                     <div class="commands-setters">
                         {{#each commands}}
-                            {{#if (eq this.datatype 'boolean')}}
-                                <a class="waves-effect waves-light btn" id="{{this.path}}"><i class="material-icons left">{{this.icon}}</i>{{this.name}}</a>
-                            {{else}}
-                            <div>
-                                Unsupported property: {{this.name}} type {{this.datatype}} (value {{this.value}})
-                            </div>
+                        {{#if this.header}}
+                            <div class="header">{{this.header}}</div>
+                        {{/if}}
+                        <a class="waves-effect waves-light btn position-{{this.position}} display-{{this.display}}" id="{{this.path}}">
+                            <i class="material-icons left">{{this.icon}}</i>
+                            {{#if (eq this.display 'DEFAULT')}}
+                            {{this.name}}
                             {{/if}}
+                        </a>
                         {{/each}}
                     </div>
                 </div>
