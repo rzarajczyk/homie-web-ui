@@ -23,6 +23,18 @@ $(() => {
         }, "json")
     }
 
+    function commandClicked() {
+        let element = $(this)
+        const data = {
+            'path': element.attr('id'),
+            'value': true
+        }
+        console.log(data)
+        $.post('/set-property', JSON.stringify(data), (response) => {
+            console.log(`Async call to set-property finished with response ${response}`)
+        }, "json")
+    }
+
     function chartLinkClicked(evt) {
         evt.preventDefault()
         let path = $(evt.currentTarget).data('path')
@@ -39,6 +51,7 @@ $(() => {
             $('#devices').append(html)
             M.AutoInit();
             $('.property-setters :input').each((index, element) => $(element).change(propertyValueChanged.deduplicate()))
+            $('.commands-setters a').each((index, element) => $(element).click(commandClicked.deduplicate()))
             $('.chart-trigger').click(chartLinkClicked.deduplicate())
         })
     })
