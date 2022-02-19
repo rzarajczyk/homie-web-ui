@@ -25,9 +25,30 @@ $(() => {
 
     function commandClicked() {
         let element = $(this)
+        let datatype = element.data('type')
+        let path = element.attr('id')
+        let argname = element.data('argname')
+        console.log(datatype)
+        if (datatype === 'boolean') {
+            commandSend(path, true)
+        } else if (datatype === 'string') {
+            $('#command-input-modal label').text(argname)
+            $('#command-input-path').val(path)
+            $('#command-input-value').val('')
+            M.Modal.getInstance($('#command-input-modal')).open()
+        }
+    }
+
+    function commandOkClicked() {
+        let path = $('#command-input-path').val()
+        let value = $('#command-input-value').val()
+        commandSend(path, value)
+    }
+
+    function commandSend(path, value) {
         const data = {
-            'path': element.attr('id'),
-            'value': true
+            'path': path,
+            'value': value
         }
         console.log(data)
         $.post('/set-property', JSON.stringify(data), (response) => {
@@ -53,6 +74,7 @@ $(() => {
             $('.property-setters :input').each((index, element) => $(element).change(propertyValueChanged.deduplicate()))
             $('.commands-setters a').each((index, element) => $(element).click(commandClicked.deduplicate()))
             $('.chart-trigger').click(chartLinkClicked.deduplicate())
+            $('#command-input-ok').click(commandOkClicked.deduplicate())
         })
     })
 })

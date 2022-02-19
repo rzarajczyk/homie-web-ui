@@ -22,6 +22,7 @@ class CommandPosition(Enum):
     LEFT_HALF = auto()
     RIGHT_HALF = auto()
 
+
 class CommandDisplay(Enum):
     DEFAULT = auto()
     ICON_ONLY = auto()
@@ -36,6 +37,8 @@ class Command:
         self.position = CommandPosition.DEFAULT
         self.display = CommandDisplay.DEFAULT
         self.header = None
+        self.datatype = None
+        self.argname = "Argument"
 
 
 class Device:
@@ -61,10 +64,11 @@ class Devices:
 
     def enrich_device(self, device, config):
         for prop in list(device.properties):
-            if prop.settable == "true" and prop.retained != "true" and prop.datatype == 'boolean':
+            if prop.settable == "true" and prop.retained != "true":
                 command = Command(prop.id)
                 command.name = prop.name
                 command.path = prop.path
+                command.datatype = prop.datatype
                 device.commands.append(command)
                 device.properties.remove(prop)
         if 'icon' in config:
@@ -83,8 +87,18 @@ class Devices:
                             device_command.display = CommandDisplay[config['commands'][command_id]['display']]
                         if 'header' in config['commands'][command_id]:
                             device_command.header = config['commands'][command_id]['header']
+                        if 'text' in config['commands'][command_id]:
+                            device_command.name = config['commands'][command_id]['text']
+                        if 'argname' in config['commands'][command_id]:
+                            device_command.argname = config['commands'][command_id]['argname']
             order = [command_id for command_id in config['commands']]
             device.commands.sort(key=lambda cmd: order.index(cmd.id) if cmd.id in order else 999999)
+        if 'properties' in config:
+            for property_id in config['properties']:
+                for device_property in device.properties:
+                    if device_property.id == property_id:
+                        if 'text' in config['properties'][property_id]:
+                            device_property.name = config['properties'][property_id]['text']
 
     def to_json(self):
         result = []
@@ -97,9 +111,11 @@ class Devices:
                     'name': command.name,
                     'path': command.path,
                     'icon': command.icon,
+                    'datatype': command.datatype,
                     'position': command.position.name,
                     'display': command.display.name,
-                    'header': command.header
+                    'header': command.header,
+                    'argname': command.argname
                 }
                 commands.append(result_command)
             for prop in device.properties:

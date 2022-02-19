@@ -56,6 +56,20 @@
     </div>
 </div>
 
+<div id="command-input-modal" class="modal">
+    <div class="modal-content">
+        <div class="input-field">
+            <input type="text" id="command-input-value">
+            <label for="command-input-value">Argument</label>
+            <input type="hidden" id="command-input-path">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-green btn-flat" id="command-input-ok">OK</a>
+        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+    </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
@@ -140,7 +154,7 @@
                         {{#if this.header}}
                             <div class="header">{{this.header}}</div>
                         {{/if}}
-                        <a class="waves-effect waves-light btn position-{{this.position}} display-{{this.display}}" id="{{this.path}}">
+                        <a class="waves-effect waves-light btn position-{{this.position}} display-{{this.display}}" id="{{this.path}}" data-type="{{this.datatype}}" data-argname="{{this.argname}}">
                             <i class="material-icons left">{{this.icon}}</i>
                             {{#if (eq this.display 'DEFAULT')}}
                             {{this.name}}
