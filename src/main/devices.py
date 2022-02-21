@@ -61,6 +61,8 @@ class Devices:
         for device in self.devices:
             if device.id in config:
                 self.enrich_device(device, config[device.id])
+            else:
+                self.enrich_device(device, {})
 
     def enrich_device(self, device, config):
         for prop in list(device.properties):
