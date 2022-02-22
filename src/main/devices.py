@@ -49,6 +49,7 @@ class Device:
         self.icon = 'https://images.sftcdn.net/images/t_app-logo-xl,f_auto/p/b038a7e4-9b25-11e6-a4ee-00163ed833e7/12078914/android-device-manager-icon.png'
         self.hidden = False
         self.commands: list[Command] = []
+        self.header = None
 
 
 class Devices:
@@ -63,6 +64,8 @@ class Devices:
                 self.enrich_device(device, config[device.id])
             else:
                 self.enrich_device(device, {})
+        order = [device_id for device_id in config]
+        self.devices.sort(key=lambda d: order.index(d.id) if d.id in order else 999999)
 
     def enrich_device(self, device, config):
         for prop in list(device.properties):
@@ -77,6 +80,8 @@ class Devices:
             device.icon = config['icon']
         if 'hidden' in config:
             device.hidden = config['hidden']
+        if 'header' in config:
+            device.header = config['header']
         if 'commands' in config:
             for command_id in config['commands']:
                 for device_command in device.commands:
@@ -137,6 +142,7 @@ class Devices:
                 'id': device.id,
                 'name': device.name,
                 'icon': device.icon,
+                'header': device.header,
                 'properties': properties,
                 'commands': commands
             }

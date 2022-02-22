@@ -67,14 +67,12 @@ $(() => {
 
     $.getJSON('/devices', result => {
         console.log(result)
-        result.devices.forEach(device => {
-            const html = template(device)
-            $('#devices').append(html)
-            M.AutoInit();
-            $('.property-setters :input').each((index, element) => $(element).change(propertyValueChanged.deduplicate()))
-            $('.commands-setters a').each((index, element) => $(element).click(commandClicked.deduplicate()))
-            $('.chart-trigger').click(chartLinkClicked.deduplicate())
-            $('#command-input-ok').click(commandOkClicked.deduplicate())
-        })
+        const html = template(result.devices)
+        $('#devices').html(html)
+        M.AutoInit();
+        $('.property-setters :input').each((index, element) => $(element).change(propertyValueChanged.deduplicate()))
+        $('.commands-setters a').each((index, element) => $(element).click(commandClicked.deduplicate()))
+        $('.chart-trigger').click(chartLinkClicked.deduplicate())
+        $('#command-input-ok').click(commandOkClicked.deduplicate())
     })
 })
