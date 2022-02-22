@@ -50,6 +50,7 @@ class Device:
         self.hidden = False
         self.commands: list[Command] = []
         self.header = None
+        self.description = None
 
 
 class Devices:
@@ -82,6 +83,8 @@ class Devices:
             device.hidden = config['hidden']
         if 'header' in config:
             device.header = config['header']
+        if 'description' in config:
+            device.description = config['description']
         if 'commands' in config:
             for command_id in config['commands']:
                 for device_command in device.commands:
@@ -143,6 +146,7 @@ class Devices:
                 'name': device.name,
                 'icon': device.icon,
                 'header': device.header,
+                'description': device.description,
                 'properties': properties,
                 'commands': commands
             }

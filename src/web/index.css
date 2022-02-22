@@ -64,6 +64,10 @@
     margin: 0;
 }
 
+.device-card blockquote {
+    font-style: italic;
+}
+
 #chart-modal .modal-footer {
     height: 90px;
 }
