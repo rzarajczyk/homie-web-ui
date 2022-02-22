@@ -14,15 +14,24 @@
 
 <div class="contatiner">
 
+
     <nav>
-        <div class="nav-wrapper">
-            <a href="#" class="brand-logo">Smart Home</a>
-            <ul id="nav-mobile" class="right hide-on-med-and-down">
-                <li><a href="http://192.168.86.100:9080/" target="_blank">Graphite</a></li>
-                <li><a href="http://192.168.86.100:9090/" target="_blank">Grafana</a></li>
-            </ul>
+        <div class="row">
+            <div class="col s12">
+                <div class="nav-wrapper">
+                    <a href="#!" class="brand-logo">Smart Home</a>
+                    <a href="#" data-target="mobile-nav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+                    <ul id="nav-mobile" class="right hide-on-med-and-down">
+                        <li><a href="http://192.168.86.100:9080/" target="_blank">Graphite</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </nav>
+
+    <ul class="sidenav" id="mobile-nav">
+        <li><a href="http://192.168.86.100:9080/" target="_blank">Graphite</a></li>
+    </ul>
 
     <div id="main">
         <div id="devices">
@@ -78,12 +87,16 @@
 <script src="index.js"></script>
 
 <script id="device-template" type="x-handlebars-template">
-        {{#each this}}
-        {{#if header}}
-            <h2>{{header}}</h2>
-        {{/if}}
-        {{#if @first}}
-        <div class="row">
+    {{#each this}}
+    {{#if header}}
+    <div class="row">
+        <div class="col s12">
+            <h4>{{header}}</h4>
+        </div>
+    </div>
+    {{/if}}
+    {{#if @first}}
+    <div class="row">
         {{/if}}
         <div class="col s6 m4 l3 xl2">
             <div class="card device-card">
@@ -175,8 +188,8 @@
         </div>
         {{/each}}
         {{#if @lats}}
-        </div>
-        {{/if}}
+    </div>
+    {{/if}}
 </script>
 
 </body>
