@@ -44,6 +44,8 @@ with open(CONFIGURATION, 'r') as f:
 
     DEVICES_CONFIG = config['devices']
 
+    SUBDEVICES = config['subdevices']
+
 ########################################################################################################################
 
 tree = HomieTree()
@@ -71,7 +73,7 @@ client.connect(MQTT_HOST, MQTT_PORT)
 
 def list_devices(params):
     # tree.tree().debug('')
-    devices = Devices(tree)
+    devices = Devices(tree, SUBDEVICES)
     devices.enrich(DEVICES_CONFIG)
     return devices.to_json()
 

@@ -54,8 +54,9 @@ class Device:
 
 
 class Devices:
-    def __init__(self, tree: HomieTree):
+    def __init__(self, tree: HomieTree, subdevices: list):
         self.devices = []
+        self.subdevices = subdevices
         for node in tree.tree().children():
             self.devices += self.parse_device_node(node)
 
@@ -157,10 +158,11 @@ class Devices:
         }
 
     def parse_device_node(self, node: Node, path: str = ''):
-        if node.id == 'homey':
+        if node.id in self.subdevices:
             result = []
+            parent_id = node.id
             for node in node.children():
-                result += self.parse_device_node(node, 'homey.')
+                result += self.parse_device_node(node, '%s.' % parent_id)
             return result
         else:
             device = Device(node.id)
