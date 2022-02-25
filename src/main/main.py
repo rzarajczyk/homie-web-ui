@@ -11,16 +11,10 @@ from devices import Devices
 from homietree import HomieTree
 from server import start_server, JsonGet, JsonPost, Redirect, StaticResources
 
-ROOT = os.environ.get('APP_ROOT', ".")
-
 ########################################################################################################################
 # logging configuration
 
-LOGGER_CONFIGURATION = "%s/config/logging.yaml" % ROOT
-if not os.path.isfile(LOGGER_CONFIGURATION):
-    shutil.copy("%s/config-defaults/logging.yaml" % ROOT, LOGGER_CONFIGURATION)
-
-with open(LOGGER_CONFIGURATION, 'r') as f:
+with open("logging.yaml", 'r') as f:
     config = yaml.full_load(f)
     logging_config.dictConfig(config)
 
@@ -30,11 +24,7 @@ LOGGER.info("Starting application!")
 ########################################################################################################################
 # application configuration
 
-CONFIGURATION = "%s/config/application.yaml" % ROOT
-if not os.path.isfile(CONFIGURATION):
-    shutil.copy("%s/config-defaults/application.yaml" % ROOT, CONFIGURATION)
-
-with open(CONFIGURATION, 'r') as f:
+with open('config/homie-web-ui.yaml', 'r') as f:
     config = yaml.full_load(f)
 
     MQTT_HOST = config['mqtt']['host']
@@ -101,5 +91,5 @@ ACTIONS = [
     StaticResources('/', './src/web')
 ]
 
-server = start_server(8080, ACTIONS)
+server = start_server(80, ACTIONS)
 server.serve_forever()

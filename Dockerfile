@@ -1,6 +1,5 @@
 FROM python:3
 ENV TZ="Europe/Warsaw"
-ENV APP_ROOT="/homie-web-ui"
 
 RUN mkdir -p /homie-web-ui
 RUN mkdir -p /homie-web-ui/config
@@ -13,4 +12,4 @@ COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 
 CMD ["python", "./src/main/main.py"]
-#CMD ["bash"]
+EXPOSE 80

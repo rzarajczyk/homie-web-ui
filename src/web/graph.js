@@ -50,7 +50,7 @@ const Graph = {
             bgcolor: 'FAFAFA',
             fgcolor: 'black'
         }
-        let url = `http://192.168.86.100:9080/render/?${encodeQueryData(params)}`
+        let url = `http://smarthome:8080/render/?${encodeQueryData(params)}`
         $('#chart-img').attr('src', url)
     },
 
