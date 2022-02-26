@@ -4,7 +4,8 @@
 
 .device-card .card-image img {
     width: auto;
-    height: 200px;
+    max-height: 200px;
+    max-width: 100%;
     display: inline;
     cursor: pointer;
 }

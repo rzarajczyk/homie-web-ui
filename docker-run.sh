@@ -1,7 +1,9 @@
 #!/bin/bash
+`TMP=$(mktemp -d)
+cp $(pwd)/config/smart-devices-to-mqtt.yaml $TMP
+echo "Temp directory is $TMP"
 docker run -it --rm \
     --name homie-web-ui \
-    -v $(pwd)/config:/homie-web-ui/config \
-    -v $(pwd)/logs:/homie-web-ui/logs \
+    -v $TMP:/homie-web-ui/config \
     -p 8080:8080 \
     rzarajczyk/homie-web-ui:latest
