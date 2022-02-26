@@ -14,6 +14,11 @@
     overflow-y: auto;
     overflow-x: hidden;
 }
+.device-card .properties .tooltipped {
+    color: #039be5;
+    cursor: pointer;
+}
+
 .device-card .card-reveal span.actual-title {
     display: inline;
     margin-right: 25px;

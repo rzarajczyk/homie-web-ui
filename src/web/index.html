@@ -115,9 +115,13 @@
                             <tr>
                                 <td>{{this.name}}</td>
                                 <td>
-                                    <a class="chart-trigger" data-path="homie.{{this.path}}" data-metric-name="{{this.name}}">
-                                        {{this.value}} {{this.unit}}
-                                    </a>
+                                    {{#if (and (eq this.datatype 'string') (isLongerThen this.value 12))}}
+                                        <i class="material-icons tooltipped" data-position="top" data-tooltip="{{this.value}}">info</i>
+                                    {{else}}
+                                        <a class="chart-trigger" data-path="homie.{{this.path}}" data-metric-name="{{this.name}}">
+                                            {{this.value}} {{this.unit}}
+                                        </a>
+                                    {{/if}}
                                 </td>
                             </tr>
                             {{/each}}
@@ -149,8 +153,13 @@
                                 <input id="{{this.path}}" type="text" value="{{this.value}}">
                                 <label for="{{this.path}}" class="active">{{this.name}}</label>
                                 {{else if (eq this.datatype 'integer')}}
-                                <input id="{{this.path}}" type="text" value="{{this.value}}">
-                                <label for="{{this.path}}" class="active">{{this.name}}</label>
+                                    {{#if this.format}}
+                                    <input id="{{this.path}}" type="range" value="{{this.value}}" min="{{min this.format}}" max="{{max this.format}}" class="tooltippedXXX" data-position="top" data-tooltip="{{this.value}}">
+                                    <label for="{{this.path}}" class="active">{{this.name}}</label>
+                                    {{else}}
+                                    <input id="{{this.path}}" type="text" value="{{this.value}}">
+                                    <label for="{{this.path}}" class="active">{{this.name}}</label>
+                                    {{/if}}
                                 {{else if (eq this.datatype 'enum')}}
                                 <select id="{{this.path}}">
                                     {{#each (split this.format ',')}}

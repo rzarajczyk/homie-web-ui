@@ -1,6 +1,10 @@
 $(() => {
     Handlebars.registerHelper('eq', (value1, value2) => value1 == value2)
     Handlebars.registerHelper('split', (string, separator) => string.split(separator))
+    Handlebars.registerHelper('and', (value1, value2) => value1 && value2)
+    Handlebars.registerHelper('isLongerThen', (string, len) => string != null && string.length > len)
+    Handlebars.registerHelper('min', (string) => string == null || string.indexOf(':') < 0 ? -1000000 : string.substring(0, string.indexOf(':')))
+    Handlebars.registerHelper('max', (string) => string == null || string.indexOf(':') < 0 ? 1000000 : string.substring(string.indexOf(':')+1))
     const deviceTemplate = $('#device-template').html()
     const template = Handlebars.compile(deviceTemplate)
 
