@@ -87,125 +87,128 @@
 <script src="index.js"></script>
 
 <script id="device-template" type="x-handlebars-template">
-    {{#each this}}
-    {{#if header}}
-    <div class="row">
-        <div class="col s12">
-            <h4>{{header}}</h4>
-        </div>
-    </div>
-    {{/if}}
-    {{#if @first}}
-    <div class="row">
+    <ul id="main-collapsible" class="collapsible no-autoinit">
+        {{#each this}}
+        {{#if header}}
+            {{#if @first}}{{else}}</div></div></li>{{/if}}
+        <li>
+            <div class="collapsible-header">
+                <div>{{header}}</div>
+            </div>
+            <div class="collapsible-body">
+                <div class="row">
         {{/if}}
-        <div class="col s6 m4 l3 xl2">
-            <div class="card device-card">
-                <div class="card-image center-align">
-                    <img class="activator" src="{{icon}}">
-                </div>
-                <div class="card-content">
-                    <span class="card-title truncate">{{name}}</span>
-                    <div class="properties">
-                        {{#if description}}
-                        <blockquote>{{description}}</blockquote>
-                        {{/if}}
-                        <table>
-                            <tbody>
-                            {{#each properties}}
-                            <tr>
-                                <td>{{this.name}}</td>
-                                <td>
-                                    {{#if (and (eq this.datatype 'string') (isLongerThen this.value 12))}}
-                                        <i class="material-icons tooltipped" data-position="top" data-tooltip="{{this.value}}">info</i>
-                                    {{else}}
-                                        <a class="chart-trigger" data-path="homie.{{this.path}}" data-metric-name="{{this.name}}">
-                                            {{this.value}} {{this.unit}}
-                                        </a>
+                    <div class="col s6 m4 l3 xl2">
+                        <div class="card device-card">
+                            <div class="card-image center-align">
+                                <img class="activator" src="{{icon}}">
+                            </div>
+                            <div class="card-content">
+                                <span class="card-title truncate">{{name}}</span>
+                                <div class="properties">
+                                    {{#if description}}
+                                    <blockquote>{{description}}</blockquote>
                                     {{/if}}
-                                </td>
-                            </tr>
-                            {{/each}}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="card-reveal">
+                                    <table>
+                                        <tbody>
+                                        {{#each properties}}
+                                        <tr>
+                                            <td>{{this.name}}</td>
+                                            <td>
+                                                {{#if (and (eq this.datatype 'string') (isLongerThen this.value 12))}}
+                                                <i class="material-icons tooltipped" data-position="top" data-tooltip="{{this.value}}">info</i>
+                                                {{else}}
+                                                <a class="chart-trigger" data-path="homie.{{this.path}}" data-metric-name="{{this.name}}">
+                                                    {{this.value}} {{this.unit}}
+                                                </a>
+                                                {{/if}}
+                                            </td>
+                                        </tr>
+                                        {{/each}}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="card-reveal">
                 <span class="card-title">
                     <i class="material-icons right">close</i><span class="actual-title">{{name}}</span>
                 </span>
-                    <div>
-                        {{#if description}}
-                        <blockquote>{{description}}</blockquote>
-                        {{/if}}
-                        <table>
-                            <tbody>
-                            <tr>
-                                <td>id</td>
-                                <td>{{id}}</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        <div class="property-setters">
-                            {{#each properties}}
-                            {{#if this.settable}}
-                            <div class="input-field">
-                                {{#if (eq this.datatype 'float')}}
-                                <input id="{{this.path}}" type="text" value="{{this.value}}">
-                                <label for="{{this.path}}" class="active">{{this.name}}</label>
-                                {{else if (eq this.datatype 'integer')}}
-                                    {{#if this.format}}
-                                    <input id="{{this.path}}" type="range" value="{{this.value}}" min="{{min this.format}}" max="{{max this.format}}" class="tooltippedXXX" data-position="top" data-tooltip="{{this.value}}">
-                                    <label for="{{this.path}}" class="active">{{this.name}}</label>
-                                    {{else}}
-                                    <input id="{{this.path}}" type="text" value="{{this.value}}">
-                                    <label for="{{this.path}}" class="active">{{this.name}}</label>
+                                <div>
+                                    {{#if description}}
+                                    <blockquote>{{description}}</blockquote>
                                     {{/if}}
-                                {{else if (eq this.datatype 'enum')}}
-                                <select id="{{this.path}}">
-                                    {{#each (split this.format ',')}}
-                                    <option value="{{this}}" {{#if (eq this ..
-                                    /value)}}selected{{/if}}>{{this}}</option>
-                                    {{/each}}
-                                </select>
-                                <label>{{this.name}}</label>
-                                {{else if (eq this.datatype 'boolean')}}
-                                <div>
-                                    <label>
-                                        <input type="checkbox" id="{{this.path}}" class="filled-in" {{#if (eq this.value
-                                        'true')}}checked{{/if}} value="true">
-                                        <span>{{this.name}}</span>
-                                    </label>
+                                    <table>
+                                        <tbody>
+                                        <tr>
+                                            <td>id</td>
+                                            <td>{{id}}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="property-setters">
+                                        {{#each properties}}
+                                        {{#if this.settable}}
+                                        <div class="input-field">
+                                            {{#if (eq this.datatype 'float')}}
+                                            <input id="{{this.path}}" type="text" value="{{this.value}}">
+                                            <label for="{{this.path}}" class="active">{{this.name}}</label>
+                                            {{else if (eq this.datatype 'integer')}}
+                                            {{#if this.format}}
+                                            <input id="{{this.path}}" type="range" value="{{this.value}}" min="{{min this.format}}" max="{{max this.format}}" class="tooltippedXXX" data-position="top" data-tooltip="{{this.value}}">
+                                            <label for="{{this.path}}" class="active">{{this.name}}</label>
+                                            {{else}}
+                                            <input id="{{this.path}}" type="text" value="{{this.value}}">
+                                            <label for="{{this.path}}" class="active">{{this.name}}</label>
+                                            {{/if}}
+                                            {{else if (eq this.datatype 'enum')}}
+                                            <select id="{{this.path}}">
+                                                {{#each (split this.format ',')}}
+                                                <option value="{{this}}" {{#if (eq this ..
+                                                /value)}}selected{{/if}}>{{this}}</option>
+                                                {{/each}}
+                                            </select>
+                                            <label>{{this.name}}</label>
+                                            {{else if (eq this.datatype 'boolean')}}
+                                            <div>
+                                                <label>
+                                                    <input type="checkbox" id="{{this.path}}" class="filled-in" {{#if (eq this.value
+                                                    'true')}}checked{{/if}} value="true">
+                                                    <span>{{this.name}}</span>
+                                                </label>
+                                            </div>
+                                            {{else}}
+                                            <div>
+                                                Unsupported property: {{this.name}} type {{this.datatype}} (value {{this.value}})
+                                            </div>
+                                            {{/if}}
+                                        </div>
+                                        {{/if}}
+                                        {{/each}}
+                                    </div>
+                                    <div class="commands-setters">
+                                        {{#each commands}}
+                                        {{#if this.header}}
+                                        <div class="header">{{this.header}}</div>
+                                        {{/if}}
+                                        <a class="waves-effect waves-light btn position-{{this.position}} display-{{this.display}}" id="{{this.path}}" data-type="{{this.datatype}}" data-argname="{{this.argname}}">
+                                            <i class="material-icons left">{{this.icon}}</i>
+                                            {{#if (eq this.display 'DEFAULT')}}
+                                            {{this.name}}
+                                            {{/if}}
+                                        </a>
+                                        {{/each}}
+                                    </div>
                                 </div>
-                                {{else}}
-                                <div>
-                                    Unsupported property: {{this.name}} type {{this.datatype}} (value {{this.value}})
-                                </div>
-                                {{/if}}
                             </div>
-                            {{/if}}
-                            {{/each}}
-                        </div>
-                        <div class="commands-setters">
-                            {{#each commands}}
-                            {{#if this.header}}
-                            <div class="header">{{this.header}}</div>
-                            {{/if}}
-                            <a class="waves-effect waves-light btn position-{{this.position}} display-{{this.display}}" id="{{this.path}}" data-type="{{this.datatype}}" data-argname="{{this.argname}}">
-                                <i class="material-icons left">{{this.icon}}</i>
-                                {{#if (eq this.display 'DEFAULT')}}
-                                {{this.name}}
-                                {{/if}}
-                            </a>
-                            {{/each}}
                         </div>
                     </div>
+                    {{/each}}
+                    {{#if @last}}
                 </div>
             </div>
-        </div>
-        {{/each}}
-        {{#if @lats}}
-    </div>
-    {{/if}}
+        </li>
+        {{/if}}
+    </ul>
 </script>
 
 </body>

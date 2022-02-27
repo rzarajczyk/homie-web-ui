@@ -4,12 +4,11 @@ $(() => {
     Handlebars.registerHelper('and', (value1, value2) => value1 && value2)
     Handlebars.registerHelper('isLongerThen', (string, len) => string != null && string.length > len)
     Handlebars.registerHelper('min', (string) => string == null || string.indexOf(':') < 0 ? -1000000 : string.substring(0, string.indexOf(':')))
-    Handlebars.registerHelper('max', (string) => string == null || string.indexOf(':') < 0 ? 1000000 : string.substring(string.indexOf(':')+1))
+    Handlebars.registerHelper('max', (string) => string == null || string.indexOf(':') < 0 ? 1000000 : string.substring(string.indexOf(':') + 1))
     const deviceTemplate = $('#device-template').html()
     const template = Handlebars.compile(deviceTemplate)
 
-    var elems = document.querySelectorAll('#chart-modal');
-    var instances = M.Modal.init(elems, {
+    M.Modal.init(document.querySelectorAll('#chart-modal'), {
         onCloseStart: Graph.hide
     });
 
@@ -74,6 +73,9 @@ $(() => {
         const html = template(result.devices)
         $('#devices').html(html)
         M.AutoInit();
+        M.Collapsible.init(document.querySelectorAll('#main-collapsible'), {
+            accordion: false
+        });
         $('.property-setters :input').each((index, element) => $(element).change(propertyValueChanged.deduplicate()))
         $('.commands-setters a').each((index, element) => $(element).click(commandClicked.deduplicate()))
         $('.chart-trigger').click(chartLinkClicked.deduplicate())
