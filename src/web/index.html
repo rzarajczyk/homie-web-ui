@@ -112,18 +112,24 @@
                                     <table>
                                         <tbody>
                                         {{#each properties}}
-                                        <tr>
-                                            <td>{{this.name}}</td>
-                                            <td>
-                                                {{#if (and (eq this.datatype 'string') (isLongerThen this.value 12))}}
-                                                <i class="material-icons tooltipped" data-position="top" data-tooltip="{{this.value}}">info</i>
-                                                {{else}}
-                                                <a class="chart-trigger" data-path="homie.{{this.path}}" data-metric-name="{{this.name}}">
-                                                    {{this.value}} {{this.unit}}
-                                                </a>
-                                                {{/if}}
-                                            </td>
-                                        </tr>
+                                            <tr {{#if this.meta}}class="with-metadata"{{/if}}>
+                                                <td>{{this.name}}</td>
+                                                <td>
+                                                    {{#if (and (eq this.datatype 'string') (isLongerThen this.value 12))}}
+                                                    <i class="material-icons tooltipped" data-position="top" data-tooltip="{{this.value}}">info</i>
+                                                    {{else}}
+                                                    <a class="chart-trigger" data-path="homie.{{this.path}}" data-metric-name="{{this.name}}">
+                                                        {{this.value}} {{this.unit}}
+                                                    </a>
+                                                    {{/if}}
+                                                </td>
+                                            </tr>
+                                            {{#each this.meta}}
+                                                <tr class="metadata {{#if @last}}last{{else}}not-last{{/if}}">
+                                                    <td class="key">{{name}}</td>
+                                                    <td>{{value}}</td>
+                                                </tr>
+                                            {{/each}}
                                         {{/each}}
                                         </tbody>
                                     </table>

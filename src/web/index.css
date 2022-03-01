@@ -20,6 +20,24 @@
     cursor: pointer;
 }
 
+.device-card .properties tr.with-metadata {
+    border-bottom: none;
+}
+
+.device-card .properties .metadata.not-last {
+    border-bottom: none;
+}
+
+.device-card .properties .metadata td {
+    font-size: smaller;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.device-card .properties .metadata td.key {
+    padding-left: 20px;
+}
+
 .device-card .card-reveal span.actual-title {
     display: inline;
     margin-right: 25px;

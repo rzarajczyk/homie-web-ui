@@ -47,8 +47,11 @@ class HomieTree:
                 get_node(parts, self.root).value = payload
             else:
                 meta_name = parts[meta_index]
-                parts = parts[0:meta_index]
-                get_node(parts, self.root).attributes[meta_name] = payload
+                path = parts[0:meta_index]
+                if meta_index != len(parts) - 1:
+                    attr_path = parts[meta_index:]
+                    meta_name = '/'.join(attr_path)
+                get_node(path, self.root).attributes[meta_name] = payload
         except Exception as e:
             self.logger.exception("Problem processing topic: %s" % topic, e)
 

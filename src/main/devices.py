@@ -1,6 +1,21 @@
+import re
 from enum import Enum, auto
 
 from homietree import Node, HomieTree
+
+
+class Metadata:
+    def __init__(self, id, name, value):
+        self.id = id
+        self.name = name
+        self.value = value
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'value': self.value
+        }
 
 
 class Property:
@@ -14,6 +29,21 @@ class Property:
         self.retained = None
         self.settable = None
         self.path = None
+        self.metadata: list[Metadata] = []
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'value': self.value,
+            'unit': self.unit,
+            'datatype': self.datatype,
+            'format': self.format,
+            'settable': self.settable == "true",
+            'retained': self.retained == "true",
+            'path': self.path,
+            'meta': [m.to_json() for m in self.metadata]
+        }
 
 
 class CommandPosition(Enum):
@@ -40,6 +70,19 @@ class Command:
         self.datatype = None
         self.argname = "Argument"
 
+    def to_json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'path': self.path,
+            'icon': self.icon,
+            'datatype': self.datatype,
+            'position': self.position.name,
+            'display': self.display.name,
+            'header': self.header,
+            'argname': self.argname
+        }
+
 
 class Device:
     def __init__(self, id):
@@ -51,6 +94,17 @@ class Device:
         self.commands: list[Command] = []
         self.header = None
         self.description = None
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'icon': self.icon,
+            'header': self.header,
+            'description': self.description,
+            'properties': [p.to_json() for p in self.properties],
+            'commands': [c.to_json() for c in self.commands]
+        }
 
 
 class Devices:
@@ -114,43 +168,7 @@ class Devices:
     def to_json(self):
         result = []
         for device in self.devices:
-            properties = []
-            commands = []
-            for command in device.commands:
-                result_command = {
-                    'id': command.id,
-                    'name': command.name,
-                    'path': command.path,
-                    'icon': command.icon,
-                    'datatype': command.datatype,
-                    'position': command.position.name,
-                    'display': command.display.name,
-                    'header': command.header,
-                    'argname': command.argname
-                }
-                commands.append(result_command)
-            for prop in device.properties:
-                result_prop = {
-                    'id': prop.id,
-                    'name': prop.name,
-                    'value': prop.value,
-                    'unit': prop.unit,
-                    'datatype': prop.datatype,
-                    'format': prop.format,
-                    'settable': prop.settable == "true",
-                    'retained': prop.retained == "true",
-                    'path': prop.path
-                }
-                properties.append(result_prop)
-            result_device = {
-                'id': device.id,
-                'name': device.name,
-                'icon': device.icon,
-                'header': device.header,
-                'description': device.description,
-                'properties': properties,
-                'commands': commands
-            }
+            result_device = device.to_json()
             if not device.hidden:
                 result.append(result_device)
         return {
@@ -193,4 +211,23 @@ class Devices:
         prop.settable = node.attributes.get('$settable', None)
         prop.retained = node.attributes.get('$retained', None)
         prop.value = node.value
+        metadata = {}
+        for attribute in node.attributes:
+            if attribute.startswith('$meta'):
+                match = re.fullmatch("\$meta/([a-z0-9-]+)/\$key", attribute)
+                if match:
+                    meta_id = match.group(1)
+                    if meta_id not in metadata:
+                        metadata[meta_id] = {}
+                    metadata[meta_id]['key'] = node.attributes[attribute]
+                match = re.fullmatch("\$meta/([a-z0-9-]+)/\$value", attribute)
+                if match:
+                    meta_id = match.group(1)
+                    if meta_id not in metadata:
+                        metadata[meta_id] = {}
+                    metadata[meta_id]['value'] = node.attributes[attribute]
+        for meta_id in metadata:
+            key = metadata[meta_id].get('key', '')
+            value = metadata[meta_id].get('value', '')
+            prop.metadata.append(Metadata(meta_id, key, value))
         return prop

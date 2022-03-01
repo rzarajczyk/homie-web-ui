@@ -49,7 +49,7 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     topic = msg.topic
     payload = msg.payload.decode(encoding='UTF-8')
-    LOGGER.info("Received event: %-70s | %s" % (topic, payload))
+    LOGGER.debug("Received event: %-70s | %s" % (topic, payload))
     tree.accept_message(topic, payload)
 
 
@@ -62,7 +62,7 @@ client.connect(MQTT_HOST, MQTT_PORT)
 
 
 def list_devices(params):
-    # tree.tree().debug('')
+    tree.tree().debug('')
     devices = Devices(tree, SUBDEVICES)
     devices.enrich(DEVICES_CONFIG)
     return devices.to_json()
