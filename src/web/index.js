@@ -5,12 +5,16 @@ $(() => {
     Handlebars.registerHelper('isLongerThen', (string, len) => string != null && string.length > len)
     Handlebars.registerHelper('min', (string) => string == null || string.indexOf(':') < 0 ? -1000000 : string.substring(0, string.indexOf(':')))
     Handlebars.registerHelper('max', (string) => string == null || string.indexOf(':') < 0 ? 1000000 : string.substring(string.indexOf(':') + 1))
+    Handlebars.registerHelper('tooltip', (string) => formatTooltip(string))
     const deviceTemplate = $('#device-template').html()
     const template = Handlebars.compile(deviceTemplate)
 
     M.Modal.init(document.querySelectorAll('#chart-modal'), {
         onCloseStart: Graph.hide
     });
+    M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
+        html: true
+    })
 
     Graph.initialize()
 
@@ -66,6 +70,15 @@ $(() => {
         $('#chart-metric-name').text(name)
         M.Modal.getInstance($('#chart-modal')).open()
         Graph.show(path)
+    }
+
+    function formatTooltip(string) {
+        string = string.trim()
+        if (string.indexOf('[') === 0 && string.indexOf(']') === string.length - 1) {
+            let parts = string.substring(1, string.length - 1).split(',')
+            return `<ul>${parts.map(it => `<li>${it}</li>`).join('')}</ul>`
+        }
+        return string
     }
 
     $.getJSON('/devices', result => {

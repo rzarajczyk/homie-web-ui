@@ -94,6 +94,7 @@ class Device:
         self.commands: list[Command] = []
         self.header = None
         self.description = None
+        self.state = None
 
     def to_json(self):
         return {
@@ -102,6 +103,7 @@ class Device:
             'icon': self.icon,
             'header': self.header,
             'description': self.description,
+            'state': self.state,
             'properties': [p.to_json() for p in self.properties],
             'commands': [c.to_json() for c in self.commands]
         }
@@ -175,16 +177,18 @@ class Devices:
             'devices': result
         }
 
-    def parse_device_node(self, node: Node, path: str = ''):
+    def parse_device_node(self, node: Node, path: str = '', state: str = None):
         if node.id in self.subdevices:
             result = []
             parent_id = node.id
+            state = node.attributes.get('$state', None)
             for node in node.children():
-                result += self.parse_device_node(node, '%s.' % parent_id)
+                result += self.parse_device_node(node, '%s.' % parent_id, state)
             return result
         else:
             device = Device(node.id)
             device.name = node.attributes.get('$name', None)
+            device.state = state if state is not None else node.attributes.get('$state', None)
             self.parse_device_sub_nodes_and_properties(device, node, path + node.id)
             return [device]
 

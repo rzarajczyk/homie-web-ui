@@ -105,6 +105,18 @@
                             </div>
                             <div class="card-content">
                                 <span class="card-title truncate">{{name}}</span>
+                                {{#if (eq state 'alert')}}
+                                <div class="not-ready alert">
+                                    <i class="material-icons">warning</i>
+                                    <p>Device error</p>
+                                </div>
+                                {{/if}}
+                                {{#if (eq state 'init')}}
+                                <div class="not-ready init">
+                                    <i class="material-icons">settings</i>
+                                    <p>Initializing...</p>
+                                </div>
+                                {{/if}}
                                 <div class="properties">
                                     {{#if description}}
                                     <blockquote>{{description}}</blockquote>
@@ -116,7 +128,7 @@
                                                 <td>{{this.name}}</td>
                                                 <td>
                                                     {{#if (and (eq this.datatype 'string') (isLongerThen this.value 12))}}
-                                                    <i class="material-icons tooltipped" data-position="top" data-tooltip="{{this.value}}">info</i>
+                                                    <i class="material-icons tooltipped" data-position="top" data-tooltip="{{tooltip this.value}}">info</i>
                                                     {{else}}
                                                     <a class="chart-trigger" data-path="homie.{{this.path}}" data-metric-name="{{this.name}}">
                                                         {{this.value}} {{this.unit}}
