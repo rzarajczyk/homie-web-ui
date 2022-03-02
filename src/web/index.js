@@ -18,6 +18,13 @@ $(() => {
 
     Graph.initialize()
 
+    const commandInputValue = $('#command-input-value')
+    $('#command-default').change(() => commandInputValue.val($('#command-default').val()))
+    $('#command-bri').change(() => commandInputValue.val($('#command-bri').val() + "," + $('#command-bri-time').val()))
+    $('#command-bri-time').change(() => commandInputValue.val($('#command-bri').val() + "," + $('#command-bri-time').val()))
+    $('#command-ct').change(() => commandInputValue.val($('#command-ct').val() + "," + $('#command-ct-time').val()))
+    $('#command-ct-time').change(() => commandInputValue.val($('#command-ct').val() + "," + $('#command-ct-time').val()))
+
     function propertyValueChanged() {
         let element = $(this)
         const data = {
@@ -33,15 +40,23 @@ $(() => {
     function commandClicked() {
         let element = $(this)
         let datatype = element.data('type')
+        let format = element.data('format')
         let path = element.attr('id')
         let argname = element.data('argname')
-        console.log(datatype)
         if (datatype === 'boolean') {
             commandSend(path, true)
         } else if (datatype === 'string') {
-            $('#command-input-modal label').text(argname)
+            $('#command-default-label').text(argname)
             $('#command-input-path').val(path)
             $('#command-input-value').val('')
+            $('.modal-form').hide()
+            if (format === '$color-temperature-transition') {
+                $('#form-color-temperature').show()
+            } else if (format === '$brightness-transition') {
+                $('#form-brightness').show()
+            } else {
+                $('#form-default').show()
+            }
             M.Modal.getInstance($('#command-input-modal')).open()
         }
     }
@@ -50,6 +65,7 @@ $(() => {
         let path = $('#command-input-path').val()
         let value = $('#command-input-value').val()
         commandSend(path, value)
+        // console.log(`${path} = ${value}`)
     }
 
     function commandSend(path, value) {

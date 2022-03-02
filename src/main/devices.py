@@ -68,6 +68,7 @@ class Command:
         self.display = CommandDisplay.DEFAULT
         self.header = None
         self.datatype = None
+        self.format = None
         self.argname = "Argument"
 
     def to_json(self):
@@ -80,6 +81,7 @@ class Command:
             'position': self.position.name,
             'display': self.display.name,
             'header': self.header,
+            'format': self.format,
             'argname': self.argname
         }
 
@@ -132,6 +134,7 @@ class Devices:
                 command.name = prop.name
                 command.path = prop.path
                 command.datatype = prop.datatype
+                command.format = prop.format
                 device.commands.append(command)
                 device.properties.remove(prop)
         if 'icon' in config:
