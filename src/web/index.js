@@ -1,4 +1,7 @@
 $(() => {
+    const deviceTemplate = Handlebars.compile($('#device-template').html())
+    const propertiesTemplate = Handlebars.compile($('#properties-template').html())
+
     Handlebars.registerHelper('eq', (value1, value2) => value1 == value2)
     Handlebars.registerHelper('split', (string, separator) => string.split(separator))
     Handlebars.registerHelper('and', (value1, value2) => value1 && value2)
@@ -6,15 +9,12 @@ $(() => {
     Handlebars.registerHelper('min', (string) => string == null || string.indexOf(':') < 0 ? -1000000 : string.substring(0, string.indexOf(':')))
     Handlebars.registerHelper('max', (string) => string == null || string.indexOf(':') < 0 ? 1000000 : string.substring(string.indexOf(':') + 1))
     Handlebars.registerHelper('tooltip', (string) => formatTooltip(string))
-    const deviceTemplate = $('#device-template').html()
-    const template = Handlebars.compile(deviceTemplate)
+    Handlebars.registerPartial('properties', propertiesTemplate)
+
 
     M.Modal.init(document.querySelectorAll('#chart-modal'), {
         onCloseStart: Graph.hide
     });
-    M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
-        html: true
-    })
 
     Graph.initialize()
 
@@ -99,15 +99,35 @@ $(() => {
 
     $.getJSON('/devices', result => {
         console.log(result)
-        const html = template(result.devices)
+        const html = deviceTemplate(result.devices)
         $('#devices').html(html)
         M.AutoInit();
         M.Collapsible.init(document.querySelectorAll('#main-collapsible'), {
             accordion: false
         });
+        initComponentsAfterUpdate()
         $('.property-setters :input').each((index, element) => $(element).change(propertyValueChanged.deduplicate()))
         $('.commands-setters a').each((index, element) => $(element).click(commandClicked.deduplicate()))
-        $('.chart-trigger').click(chartLinkClicked.deduplicate())
         $('#command-input-ok').click(commandOkClicked.deduplicate())
+
+        setInterval(update, 5000)
     })
+
+    function update() {
+        $.getJSON('/devices', result => {
+            console.log(result)
+            result.devices.forEach(device => {
+                let html = propertiesTemplate(device)
+                $(`#device-${device.id} .properties`).html(html)
+            })
+            initComponentsAfterUpdate()
+        })
+    }
+
+    function initComponentsAfterUpdate() {
+        M.Tooltip.init(document.querySelectorAll('.tooltipped'), {
+            html: true
+        })
+        $('.chart-trigger').click(chartLinkClicked.deduplicate())
+    }
 })

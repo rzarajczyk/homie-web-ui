@@ -109,6 +109,39 @@
 <script src="graph.js"></script>
 <script src="index.js"></script>
 
+<script id="properties-template" type="x-handlebars-template">
+    {{#if description}}
+    <blockquote>{{description}}</blockquote>
+    {{/if}}
+    <table>
+        <tbody>
+            {{#each properties}}
+                <tr {{#if this.meta}}class="with-metadata"{{/if}}>
+                    <td>{{this.name}}</td>
+                    <td>
+                        {{#if (and (eq this.datatype 'string') (isLongerThen this.value 12))}}
+                            <i class="material-icons tooltipped" data-position="top" data-tooltip="{{tooltip this.value}}">info</i>
+                        {{else}}
+                            <a class="chart-trigger" data-path="homie.{{this.path}}" data-metric-name="{{this.name}}">
+                                {{this.value}} {{this.unit}}
+                            </a>
+                        {{/if}}
+                    </td>
+
+                </tr>
+
+                {{#each this.meta}}
+                    <tr class="metadata {{#if @last}}last{{else}}not-last{{/if}}">
+                        <td class="key">{{this.name}}</td>
+                        <td>{{this.value}}</td>
+                    </tr>
+                {{/each}}
+
+            {{/each}}
+        </tbody>
+    </table>
+</script>
+
 <script id="device-template" type="x-handlebars-template">
     <ul id="main-collapsible" class="collapsible no-autoinit">
         {{#each this}}
@@ -121,7 +154,7 @@
             <div class="collapsible-body">
                 <div class="row">
         {{/if}}
-                    <div class="col s6 m4 l3 xl2">
+                    <div class="col s6 m4 l3 xl2" id="device-{{id}}">
                         <div class="card device-card">
                             <div class="card-image center-align">
                                 <img class="activator" src="{{icon}}">
@@ -141,33 +174,7 @@
                                 </div>
                                 {{/if}}
                                 <div class="properties">
-                                    {{#if description}}
-                                    <blockquote>{{description}}</blockquote>
-                                    {{/if}}
-                                    <table>
-                                        <tbody>
-                                        {{#each properties}}
-                                            <tr {{#if this.meta}}class="with-metadata"{{/if}}>
-                                                <td>{{this.name}}</td>
-                                                <td>
-                                                    {{#if (and (eq this.datatype 'string') (isLongerThen this.value 12))}}
-                                                    <i class="material-icons tooltipped" data-position="top" data-tooltip="{{tooltip this.value}}">info</i>
-                                                    {{else}}
-                                                    <a class="chart-trigger" data-path="homie.{{this.path}}" data-metric-name="{{this.name}}">
-                                                        {{this.value}} {{this.unit}}
-                                                    </a>
-                                                    {{/if}}
-                                                </td>
-                                            </tr>
-                                            {{#each this.meta}}
-                                                <tr class="metadata {{#if @last}}last{{else}}not-last{{/if}}">
-                                                    <td class="key">{{name}}</td>
-                                                    <td>{{value}}</td>
-                                                </tr>
-                                            {{/each}}
-                                        {{/each}}
-                                        </tbody>
-                                    </table>
+                                    {{> properties}}
                                 </div>
                             </div>
                             <div class="card-reveal">

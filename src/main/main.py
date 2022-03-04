@@ -62,7 +62,7 @@ client.connect(MQTT_HOST, MQTT_PORT)
 
 
 def list_devices(params):
-    tree.tree().debug('')
+    # tree.tree().debug('')
     devices = Devices(tree, SUBDEVICES)
     devices.enrich(DEVICES_CONFIG)
     return devices.to_json()
