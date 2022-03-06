@@ -1,0 +1,10 @@
+#scan {
+    width: 100%;
+    margin-top: 5%;
+    height: auto;
+    line-height: 12rem;
+}
+
+#preview img {
+    width: 100%;
+}

@@ -2,6 +2,8 @@ import json
 import logging
 import mimetypes
 import os
+import socket
+import threading
 import urllib.parse as urlparse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
@@ -121,6 +123,7 @@ class StaticResources(Action):
         return method == 'GET' and path.startswith(self._path_prefix)
 
     def handle(self, method, path, params, payload) -> Response:
+        path = path[len(self._path_prefix):]
         optional_slash = '/' if not self._dir.endswith('/') and not path.startswith('/') else ''
         file = self._dir + optional_slash + path
         if os.path.isfile(file):
@@ -133,16 +136,49 @@ class StaticResources(Action):
             return ErrorResponse(404, "File not found: %s" % path)
 
 
-def start_server(port, actions: list[Action]) -> HTTPServer:
+class ServerController:
+    def __init__(self, threads: list):
+        self.threads = threads
+
+    def serve_forever(self):
+        for thread in self.threads:
+            thread.start()
+
+
+def start_server(port: int, actions: list[Action], thread_count: int = 10) -> ServerController:
     logger = logging.getLogger('web')
+
+    logger.info('Starting httpserver on port %s in %s threads' % (port, thread_count))
+
+    socket_address = ('', port)
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.bind(socket_address)
+    sock.listen(5)
 
     class ValidationException(Exception):
         def __init__(self, *args, **kwargs):
             Exception.__init__(self, *args, **kwargs)
 
+    class ServerThread(threading.Thread):
+        def __init__(self, i):
+            threading.Thread.__init__(self)
+            self.i = i
+            self.daemon = False
+
+        def run(self):
+            httpd = HTTPServer(socket_address, RequestHandler, False)
+
+            # Prevent the HTTP server from re-binding every handler.
+            # https://stackoverflow.com/questions/46210672/
+            httpd.socket = sock
+            httpd.server_bind = self.server_close = lambda self: None
+
+            httpd.serve_forever()
+
     class RequestHandler(BaseHTTPRequestHandler):
         def do_GET(self):
-            logger.debug("Accepted HTTP request %s" % self.path)
+            logger.debug("Accepted HTTP request %s on thread %s" % (self.path, threading.current_thread().name))
             try:
                 path, params = self.__parse(self.path)
                 for action in actions:
@@ -158,11 +194,11 @@ def start_server(port, actions: list[Action]) -> HTTPServer:
                 logger.error("Exception", e)
 
         def do_POST(self):
-            logger.debug("Accepted HTTP request %s" % self.path)
+            logger.debug("Accepted HTTP request %s on thread %s" % (self.path, threading.current_thread().name))
             try:
                 path, params = self.__parse(self.path)
-                content_length = int(self.headers['Content-Length'])
-                payload = self.rfile.read(content_length)
+                content_length = int(self.headers['Content-Length']) if 'Content-Length' in self.headers else 0
+                payload = self.rfile.read(content_length) if content_length > 0 else ""
                 for action in actions:
                     if action.can_handle('POST', path, params, payload):
                         output = action.handle('POST', path, params, payload)
@@ -196,6 +232,6 @@ def start_server(port, actions: list[Action]) -> HTTPServer:
             except Exception as e:
                 raise ValidationException(e)
 
-    logger.info('Starting httpserver on port %s' % port)
+    threads = [ServerThread(i) for i in range(thread_count)]
 
-    return HTTPServer(('', port), RequestHandler)
+    return ServerController(threads)

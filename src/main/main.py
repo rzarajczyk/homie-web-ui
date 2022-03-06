@@ -1,10 +1,9 @@
 import json
 import logging
-import os
-import shutil
 from logging import config as logging_config
 
 import paho.mqtt.client as mqtt
+import requests
 import yaml
 
 from devices import Devices
@@ -35,6 +34,8 @@ with open('config/homie-web-ui.yaml', 'r') as f:
     DEVICES_CONFIG = config['devices']
 
     SUBDEVICES = config['subdevices']
+
+    SCANNER = config['scanner']
 
 ########################################################################################################################
 
@@ -82,13 +83,19 @@ def set_property(params, payload):
     client.publish(topic, value)
 
 
+def scan(params, payload):
+    LOGGER.info('Requesting scanner')
+    return requests.post('%s/scan' % SCANNER['url']).json()
+
+
 client.loop_start()
 
 ACTIONS = [
     JsonGet('/devices', list_devices),
     JsonPost('/set-property', set_property),
     Redirect('/', '/index.html'),
-    StaticResources('/', './src/web')
+    StaticResources('/', './src/web'),
+    JsonPost('/scan', scan)
 ]
 
 server = start_server(80, ACTIONS)
