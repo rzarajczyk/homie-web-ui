@@ -1,4 +1,6 @@
 $(() => {
+    getNavigationLinks('#mobile-nav, #desktop-nav')
+
     M.AutoInit()
 
     M.Modal.init(document.querySelector('#scanning'), {

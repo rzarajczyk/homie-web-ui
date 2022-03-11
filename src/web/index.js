@@ -1,4 +1,6 @@
 $(() => {
+    getNavigationLinks('#mobile-nav, #desktop-nav')
+
     const deviceTemplate = Handlebars.compile($('#device-template').html())
     const propertiesTemplate = Handlebars.compile($('#properties-template').html())
 

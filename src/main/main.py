@@ -3,11 +3,14 @@ import logging
 from logging import config as logging_config
 
 import paho.mqtt.client as mqtt
-import requests
 import yaml
 
 from devices import Devices
 from homietree import HomieTree
+from plugins.menu_link.menu_link import MenuLinkPlugin
+from plugins.plugin import Link
+from plugins.scan.scan import ScanPlugin
+from plugins.tts.tts import TtsPlugin
 from server import start_server, JsonGet, JsonPost, Redirect, StaticResources
 
 ########################################################################################################################
@@ -35,9 +38,22 @@ with open('config/homie-web-ui.yaml', 'r') as f:
 
     SUBDEVICES = config['subdevices']
 
-    SCANNER = config['scanner']
-
+    PLUGINS_CONFIG = config['plugins']
 ########################################################################################################################
+
+PLUGIN_CLASSES = {
+    'scan': ScanPlugin,
+    'menu-link': MenuLinkPlugin,
+    'tts': TtsPlugin
+}
+
+PLUGINS = []
+
+for plugin_id in PLUGINS_CONFIG:
+    plugin_type = PLUGINS_CONFIG[plugin_id]['type']
+    plugin_class = PLUGIN_CLASSES[plugin_type]
+    plugin = plugin_class(PLUGINS_CONFIG[plugin_id], './src/main/plugins/%s' % plugin_type.replace('-', '_'))
+    PLUGINS.append(plugin)
 
 tree = HomieTree()
 
@@ -83,20 +99,28 @@ def set_property(params, payload):
     client.publish(topic, value)
 
 
-def scan(params, payload):
-    LOGGER.info('Requesting scanner')
-    return requests.post('%s/scan' % SCANNER['url']).json()
+def navigation(params):
+    links = []
+    links += [Link('Smart Home', '/index.html')]
+    for plugin in PLUGINS:
+        links += plugin.links()
+    return {
+        'navigation': links
+    }
 
 
 client.loop_start()
 
 ACTIONS = [
+    JsonGet('/navigation', navigation),
     JsonGet('/devices', list_devices),
     JsonPost('/set-property', set_property),
     Redirect('/', '/index.html'),
-    StaticResources('/', './src/web'),
-    JsonPost('/scan', scan)
+    StaticResources('/', './src/web')
 ]
+
+for plugin in PLUGINS:
+    ACTIONS += plugin.actions()
 
 server = start_server(80, ACTIONS)
 server.serve_forever()

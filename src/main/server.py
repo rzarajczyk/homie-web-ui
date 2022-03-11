@@ -115,15 +115,18 @@ class Redirect(Action):
 
 
 class StaticResources(Action):
-    def __init__(self, path_prefix, dir):
-        self._path_prefix = path_prefix
+    def __init__(self, url_path_prefix, dir):
+        self._url_prefix = url_path_prefix
         self._dir = dir
+        if not self._url_prefix.endswith('/'):
+            self._url_prefix += '/'
 
     def can_handle(self, method, path, params, payload):
-        return method == 'GET' and path.startswith(self._path_prefix)
+        print(path[len(self._url_prefix):])
+        return method == 'GET' and path.startswith(self._url_prefix) and '/' not in path[len(self._url_prefix):]
 
     def handle(self, method, path, params, payload) -> Response:
-        path = path[len(self._path_prefix):]
+        path = path[len(self._url_prefix):]
         optional_slash = '/' if not self._dir.endswith('/') and not path.startswith('/') else ''
         file = self._dir + optional_slash + path
         if os.path.isfile(file):
