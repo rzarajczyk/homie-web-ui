@@ -123,4 +123,8 @@ for plugin in PLUGINS:
     ACTIONS += plugin.actions()
 
 server = start_server(80, ACTIONS)
-server.serve_forever()
+try:
+    server.serve_forever()
+finally:
+    LOGGER.info('Closing server')
+    server.close()

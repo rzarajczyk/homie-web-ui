@@ -140,12 +140,18 @@ class StaticResources(Action):
 
 
 class ServerController:
-    def __init__(self, threads: list):
+    def __init__(self, threads: list, sock):
         self.threads = threads
+        self.sock = sock
 
     def serve_forever(self):
         for thread in self.threads:
             thread.start()
+        for thread in self.threads:
+            thread.join()
+
+    def close(self):
+        self.sock.close()
 
 
 def start_server(port: int, actions: list[Action], thread_count: int = 10) -> ServerController:
@@ -237,4 +243,4 @@ def start_server(port: int, actions: list[Action], thread_count: int = 10) -> Se
 
     threads = [ServerThread(i) for i in range(thread_count)]
 
-    return ServerController(threads)
+    return ServerController(threads, sock)
