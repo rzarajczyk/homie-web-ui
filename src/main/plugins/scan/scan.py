@@ -1,7 +1,7 @@
 import requests
 
 from plugins.plugin import Plugin, Link
-from server import Action, JsonPost, StaticResources
+from server import Action, JsonPost, StaticResources, JsonGet
 
 
 class ScanPlugin(Plugin):
@@ -15,10 +15,18 @@ class ScanPlugin(Plugin):
 
     def actions(self) -> list[Action]:
         return [
-            JsonPost('/scan', self.scan),
+            JsonGet('/scan/ready', self.scanner_ready),
+            JsonPost('/scan/scan', self.scan),
             StaticResources('/scan', '%s/web' % self.root)
         ]
 
     def scan(self, params, payload):
         self.logger.info('Requesting scanner')
-        return requests.post('%s/scan' % self.url).json()
+        response = requests.post('%s/scan' % self.url)
+        response.raise_for_status()
+        return response.json()
+
+    def scanner_ready(self, params):
+        self.logger.info('Checking scanner readiness')
+        response = requests.get('%s/print/info' % self.url)
+        return {'ready': response.status_code == 200}
