@@ -4,6 +4,7 @@ import mimetypes
 import os
 import socket
 import threading
+import time
 import urllib.parse as urlparse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
@@ -144,17 +145,20 @@ class ServerController:
         self.threads = threads
         self.sock = sock
 
-    def serve_forever(self):
+    def start(self, block_caller_thread: bool = False):
         for thread in self.threads:
             thread.start()
-        for thread in self.threads:
-            thread.join()
+        if block_caller_thread:
+            while True:
+                time.sleep(5 * 60)
 
-    def close(self):
+    def stop(self):
         self.sock.close()
+        for thread in self.threads:
+            thread.shutdown()
 
 
-def start_server(port: int, actions: list[Action], thread_count: int = 10) -> ServerController:
+def http_server(port: int, actions: list[Action], thread_count: int = 10) -> ServerController:
     logger = logging.getLogger('web')
 
     logger.info('Starting httpserver on port %s in %s threads' % (port, thread_count))
@@ -174,16 +178,21 @@ def start_server(port: int, actions: list[Action], thread_count: int = 10) -> Se
             threading.Thread.__init__(self)
             self.i = i
             self.daemon = False
+            self.httpd = None
 
         def run(self):
-            httpd = HTTPServer(socket_address, RequestHandler, False)
+            self.httpd = HTTPServer(socket_address, RequestHandler, False)
 
             # Prevent the HTTP server from re-binding every handler.
             # https://stackoverflow.com/questions/46210672/
-            httpd.socket = sock
-            httpd.server_bind = self.server_close = lambda self: None
+            self.httpd.socket = sock
+            self.httpd.server_bind = self.server_close = lambda self: None
 
-            httpd.serve_forever()
+            self.httpd.serve_forever()
+
+        def shutdown(self):
+            if self.httpd is not None:
+                self.httpd.shutdown()
 
     class RequestHandler(BaseHTTPRequestHandler):
         def do_GET(self):

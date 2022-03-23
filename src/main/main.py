@@ -10,8 +10,9 @@ from homietree import HomieTree
 from plugins.menu_link.menu_link import MenuLinkPlugin
 from plugins.plugin import Link
 from plugins.scan.scan import ScanPlugin
+from plugins.toyota.toyota import ToyotaPlugin
 from plugins.tts.tts import TtsPlugin
-from server import start_server, JsonGet, JsonPost, Redirect, StaticResources
+from server import JsonGet, JsonPost, Redirect, StaticResources, http_server
 
 ########################################################################################################################
 # logging configuration
@@ -44,7 +45,8 @@ with open('config/homie-web-ui.yaml', 'r') as f:
 PLUGIN_CLASSES = {
     'scan': ScanPlugin,
     'menu-link': MenuLinkPlugin,
-    'tts': TtsPlugin
+    'tts': TtsPlugin,
+    'toyota': ToyotaPlugin
 }
 
 PLUGINS = []
@@ -122,9 +124,9 @@ ACTIONS = [
 for plugin in PLUGINS:
     ACTIONS += plugin.actions()
 
-server = start_server(80, ACTIONS)
+server = http_server(80, ACTIONS)
 try:
-    server.serve_forever()
+    server.start(block_caller_thread=True)
 finally:
     LOGGER.info('Closing server')
-    server.close()
+    server.stop()
