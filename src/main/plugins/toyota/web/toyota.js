@@ -124,6 +124,12 @@ function tripClicked() {
 $(() => {
     getNavigationLinks('#mobile-nav, #desktop-nav')
 
+    $.get('/toyota/apikey', (data) => {
+        let googleMapsScript = document.createElement('script');
+        googleMapsScript.setAttribute('src',`https://maps.googleapis.com/maps/api/js?key=${data.apikey}&callback=initMap`);
+        document.head.appendChild(googleMapsScript);
+    })
+
     M.AutoInit()
     M.Modal.init(document.querySelector('#trip-modal'), {
         endingTop: '5%'
@@ -156,6 +162,8 @@ $(() => {
 
         M.Modal.getInstance(document.querySelector('#loading-modal')).close()
     })
+
+
 })
 
 function initMap() {

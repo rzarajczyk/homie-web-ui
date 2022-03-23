@@ -8,6 +8,7 @@ class ToyotaPlugin(Plugin):
     def __init__(self, config, plugin_root):
         Plugin.__init__(self, 'ToyotaPlugin')
         self.url = config['url']
+        self.key = config['google-api-key']
         self.root = plugin_root
 
     def links(self) -> list[Link]:
@@ -16,9 +17,15 @@ class ToyotaPlugin(Plugin):
     def actions(self) -> list[Action]:
         return [
             JsonGet('/toyota/data', self.data),
+            JsonGet('/toyota/apikey', self.api_key),
             JsonGet('/toyota/trip', self.trip),
             StaticResources('/toyota', '%s/web' % self.root)
         ]
+
+    def api_key(self, params):
+        return {
+            'apikey': self.key
+        }
 
     def trip(self, params):
         trip_response = requests.get('%s/trip?id=%s' % (self.url, params['id'][0]))
