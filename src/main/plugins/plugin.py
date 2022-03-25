@@ -1,6 +1,6 @@
 import logging
 
-from server import Action
+from actions_server import Action
 
 
 class Link:

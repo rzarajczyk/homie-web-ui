@@ -1,7 +1,7 @@
 import requests
 
 from plugins.plugin import Plugin, Link
-from server import Action, JsonPost, StaticResources, JsonGet
+from actions_server import Action, JsonPost, StaticResources, JsonGet
 
 
 class ToyotaPlugin(Plugin):

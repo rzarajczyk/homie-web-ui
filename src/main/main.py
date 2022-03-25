@@ -12,7 +12,7 @@ from plugins.plugin import Link
 from plugins.scan.scan import ScanPlugin
 from plugins.toyota.toyota import ToyotaPlugin
 from plugins.tts.tts import TtsPlugin
-from server import JsonGet, JsonPost, Redirect, StaticResources, http_server
+from actions_server import JsonGet, JsonPost, Redirect, StaticResources, http_server
 
 ########################################################################################################################
 # logging configuration

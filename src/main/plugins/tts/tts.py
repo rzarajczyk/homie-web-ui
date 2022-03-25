@@ -1,5 +1,5 @@
 from plugins.plugin import Plugin
-from server import Action, StaticResources
+from actions_server import Action, StaticResources
 
 
 class TtsPlugin(Plugin):
