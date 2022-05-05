@@ -1,11 +1,8 @@
 FROM python:3
-ENV TZ="Europe/Warsaw"
 
-RUN mkdir -p /homie-web-ui
-RUN mkdir -p /homie-web-ui/config
-RUN mkdir -p /homie-web-ui/logs
+RUN mkdir -p /app/config
 
-WORKDIR /homie-web-ui
+WORKDIR /app
 
 COPY . .
 

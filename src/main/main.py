@@ -1,9 +1,8 @@
 import json
-import logging
-from logging import config as logging_config
 
 import paho.mqtt.client as mqtt
-import yaml
+from actions_server import JsonGet, JsonPost, Redirect, StaticResources, http_server
+from bootstrap.bootstrap import start_service
 
 from devices import Devices
 from homietree import HomieTree
@@ -12,35 +11,19 @@ from plugins.plugin import Link
 from plugins.scan.scan import ScanPlugin
 from plugins.toyota.toyota import ToyotaPlugin
 from plugins.tts.tts import TtsPlugin
-from actions_server import JsonGet, JsonPost, Redirect, StaticResources, http_server
 
-########################################################################################################################
-# logging configuration
+config, logger, timezone = start_service()
 
-with open("logging.yaml", 'r') as f:
-    config = yaml.full_load(f)
-    logging_config.dictConfig(config)
+MQTT_HOST = config['mqtt']['host']
+MQTT_PORT = config['mqtt']['port']
+MQTT_USER = config['mqtt']['user']
+MQTT_PASS = config['mqtt']['password']
 
-LOGGER = logging.getLogger("main")
-LOGGER.info("Starting application!")
+DEVICES_CONFIG = config['devices']
 
-########################################################################################################################
-# application configuration
+SUBDEVICES = config['subdevices']
 
-with open('config/homie-web-ui.yaml', 'r') as f:
-    config = yaml.full_load(f)
-
-    MQTT_HOST = config['mqtt']['host']
-    MQTT_PORT = config['mqtt']['port']
-    MQTT_USER = config['mqtt']['user']
-    MQTT_PASS = config['mqtt']['password']
-
-    DEVICES_CONFIG = config['devices']
-
-    SUBDEVICES = config['subdevices']
-
-    PLUGINS_CONFIG = config['plugins']
-########################################################################################################################
+PLUGINS_CONFIG = config['plugins']
 
 PLUGIN_CLASSES = {
     'scan': ScanPlugin,
@@ -61,14 +44,14 @@ tree = HomieTree()
 
 
 def on_connect(client, userdata, flags, rc):
-    LOGGER.info("Connected with result code %s" % str(rc))
+    logger.info("Connected with result code %s" % str(rc))
     client.subscribe("homie/#")
 
 
 def on_message(client, userdata, msg):
     topic = msg.topic
     payload = msg.payload.decode(encoding='UTF-8')
-    LOGGER.debug("Received event: %-70s | %s" % (topic, payload))
+    logger.debug("Received event: %-70s | %s" % (topic, payload))
     tree.accept_message(topic, payload)
 
 
@@ -97,7 +80,7 @@ def set_property(params, payload):
     elif value is True:
         value = "true"
 
-    LOGGER.info("PUBLISHING:     %-70s | %s" % (topic, value))
+    logger.info("PUBLISHING:     %-70s | %s" % (topic, value))
     client.publish(topic, value)
 
 
@@ -128,5 +111,5 @@ server = http_server(80, ACTIONS)
 try:
     server.start(block_caller_thread=True)
 finally:
-    LOGGER.info('Closing server')
+    logger.info('Closing server')
     server.stop()
