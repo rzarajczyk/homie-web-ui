@@ -1,7 +1,7 @@
 import re
 from enum import Enum, auto
 
-from homietree import Node, HomieTree
+from .homietree import Node, HomieTree
 
 
 class Metadata:

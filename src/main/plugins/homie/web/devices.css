@@ -1,0 +1,146 @@
+.device-card .card-title {
+    font-size: 16px;
+}
+
+.device-card .card-image {
+    height: 205px;
+}
+
+.device-card .card-image img {
+    width: auto;
+    max-height: 200px;
+    max-width: 100%;
+    display: inline;
+    cursor: pointer;
+}
+
+.device-card .not-ready {
+    position: absolute;
+    top: 280px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    text-align: center;
+    padding-top: 75px;
+}
+
+.device-card .not-ready i {
+    font-size: 6rem;
+}
+
+.device-card .alert {
+    background-color: rgba(255, 255, 0, 0.75);
+}
+
+.device-card .init {
+    background-color: rgba(128, 128, 128, 0.75);
+}
+
+.device-card .properties {
+    height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.device-card .properties .tooltipped {
+    color: #039be5;
+    cursor: pointer;
+}
+
+.device-card .properties tr.with-metadata {
+    border-bottom: none;
+}
+
+.device-card .properties .metadata.not-last {
+    border-bottom: none;
+}
+
+.device-card .properties .metadata td {
+    font-size: smaller;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.device-card .properties .metadata td.key {
+    padding-left: 20px;
+}
+
+.device-card .card-reveal span.actual-title {
+    display: inline;
+    margin-right: 25px;
+}
+
+.device-card .card-reveal table {
+    margin-bottom: 25px;
+}
+
+.device-card .chart-trigger {
+    cursor: pointer;
+}
+
+.device-card .commands-setters .header {
+    padding-top: 2em;
+    padding-bottom: 0.5em;
+    clear: both;
+    color: #9e9e9e;
+}
+
+.device-card .commands-setters a.btn {
+    display: block;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+.device-card .commands-setters a.btn.position-SMALLER {
+    margin-left: 15%;
+    margin-right: 15%;
+}
+
+.device-card .commands-setters a.btn.position-LEFT_HALF {
+    width: 48%;
+    float: left;
+}
+
+.device-card .commands-setters a.btn.position-RIGHT_HALF {
+    width: 48%;
+    float: right;
+}
+
+.device-card .commands-setters a.btn.display-ICON_ONLY {
+    text-align: center;
+}
+
+.device-card .commands-setters a.btn.display-ICON_ONLY i {
+    float: none !important;
+    margin: 0;
+}
+
+.device-card blockquote {
+    font-style: italic;
+}
+
+#chart-modal .modal-footer {
+    height: 90px;
+}
+
+#chart-history-selector {
+    float: left;
+}
+
+#chart-modal .modal-close {
+    margin-top: 30px;
+}
+
+#chart-history-selector .select-wrapper ul {
+    top: -107px !important;
+}
+
+.material-tooltip ul {
+    list-style-type: decimal;
+    text-align: left;
+    padding-left: 20px;
+}
+
+.material-tooltip ul li {
+    list-style-type: decimal;
+}

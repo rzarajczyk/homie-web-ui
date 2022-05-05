@@ -9,6 +9,8 @@ loggers:
     level: WARN
   "main":
     level: INFO
+  "homie":
+    level: INFO
 handlers:
   stdout:
     formatter: standard

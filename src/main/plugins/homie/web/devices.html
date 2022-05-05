@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Home</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="devices.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="icon"
+          href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏠</text></svg>">
+</head>
+<body>
+
+<nav>
+    <div class="row">
+        <div class="col s12">
+            <div class="nav-wrapper">
+                <a href="#!" class="brand-logo">Smart Home</a>
+                <a href="#" data-target="mobile-nav" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+                <ul id="desktop-nav" class="right hide-on-med-and-down"></ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<ul class="sidenav" id="mobile-nav"></ul>
+
+
+<div class="no-container">
+    <div id="main">
+        <div id="devices">
+        </div>
+    </div>
+
+</div>
+
+<div id="chart-modal" class="modal modal-fixed-footer no-autoinit">
+    <div class="modal-content">
+        <h4>History: <span id="chart-metric-name"></span></h4>
+        <div>
+            <img id="chart-img" src="">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div id="chart-history-selector">
+            <div class="input-field inline">
+                <input id="chart-history-amount" type="number" class="" value="60" min="1">
+                <label for="chart-history-amount">Show last</label>
+            </div>
+            <div class="input-field inline">
+                <select id="chart-history-units">
+                    <option value="minutes" selected>minutes</option>
+                    <option value="hours">hours</option>
+                    <option value="days">days</option>
+                </select>
+            </div>
+        </div>
+        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Close</a>
+    </div>
+</div>
+
+<div id="command-input-modal" class="modal">
+    <div class="modal-content">
+        <input type="hidden" id="command-input-path">
+        <input type="hidden" id="command-input-value">
+        <div id="form-default" class="modal-form">
+            <div class="input-field">
+                <input type="text" id="command-default">
+                <label for="command-default" id="command-default-label">Argument</label>
+            </div>
+        </div>
+        <div id="form-brightness" class="modal-form">
+            <div class="input-field">
+                <input type="text" id="command-bri">
+                <label for="command-bri">Brightness (%)</label>
+            </div>
+            <div class="input-field">
+                <input type="text" id="command-bri-time">
+                <label for="command-bri-time">Transition time (s)</label>
+            </div>
+        </div>
+        <div id="form-color-temperature" class="modal-form">
+            <div class="input-field">
+                <input type="text" id="command-ct">
+                <label for="command-bri">Color Temperature (K)</label>
+            </div>
+            <div class="input-field">
+                <input type="text" id="command-ct-time">
+                <label for="command-ct-time">Transition time (s)</label>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancel</a>
+        <a href="#!" class="modal-close waves-effect waves-green btn-flat" id="command-input-ok">OK</a>
+    </div>
+</div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+    <script src="deduplicate.js"></script>
+    <script src="graph.js"></script>
+    <script src="devices.js"></script>
+    <script src="/menu.js"></script>
+
+<script id="properties-template" type="x-handlebars-template">
+    {{#if description}}
+    <blockquote>{{description}}</blockquote>
+    {{/if}}
+    <table>
+        <tbody>
+        {{#each properties}}
+        <tr {{#if this.meta}}class="with-metadata"{{/if}}>
+        <td>{{this.name}}</td>
+        <td>
+            {{#if (and (eq this.datatype 'string') (isLongerThen this.value 12))}}
+            <i class="material-icons tooltipped" data-position="top" data-tooltip="{{tooltip this.value}}">info</i>
+            {{else}}
+            <a class="chart-trigger" data-path="homie.{{this.path}}" data-metric-name="{{this.name}}">
+                {{this.value}} {{this.unit}}
+            </a>
+            {{/if}}
+        </td>
+
+        </tr>
+
+        {{#each this.meta}}
+        <tr class="metadata {{#if @last}}last{{else}}not-last{{/if}}">
+            <td class="key">{{this.name}}</td>
+            <td>{{this.value}}</td>
+        </tr>
+        {{/each}}
+
+        {{/each}}
+        </tbody>
+    </table>
+</script>
+
+<script id="device-template" type="x-handlebars-template">
+    <ul id="main-collapsible" class="collapsible no-autoinit">
+        {{#each this}}
+        {{#if header}}
+        {{#if @first}}{{else}}</div></div></li>{{/if}}
+        <li>
+            <div class="collapsible-header">
+                <div>{{header}}</div>
+            </div>
+            <div class="collapsible-body">
+                <div class="row">
+                    {{/if}}
+                    <div class="col s6 m4 l3 xl2" id="device-{{id}}">
+                        <div class="card device-card">
+                            <div class="card-image center-align">
+                                <img class="activator" src="{{icon}}">
+                            </div>
+                            <div class="card-content">
+                                <span class="card-title truncate">{{name}}</span>
+                                {{#if (eq state 'alert')}}
+                                <div class="not-ready alert">
+                                    <i class="material-icons">warning</i>
+                                    <p>Device error</p>
+                                </div>
+                                {{/if}}
+                                {{#if (eq state 'init')}}
+                                <div class="not-ready init">
+                                    <i class="material-icons">settings</i>
+                                    <p>Initializing...</p>
+                                </div>
+                                {{/if}}
+                                <div class="properties">
+                                    {{> properties}}
+                                </div>
+                            </div>
+                            <div class="card-reveal">
+                <span class="card-title">
+                    <i class="material-icons right">close</i><span class="actual-title">{{name}}</span>
+                </span>
+                                <div>
+                                    {{#if description}}
+                                    <blockquote>{{description}}</blockquote>
+                                    {{/if}}
+                                    <table>
+                                        <tbody>
+                                        <tr>
+                                            <td>id</td>
+                                            <td>{{id}}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="property-setters">
+                                        {{#each properties}}
+                                        {{#if this.settable}}
+                                        <div class="input-field">
+                                            {{#if (eq this.datatype 'float')}}
+                                            <input id="{{this.path}}" type="text" value="{{this.value}}">
+                                            <label for="{{this.path}}" class="active">{{this.name}}</label>
+                                            {{else if (eq this.datatype 'integer')}}
+                                            {{#if this.format}}
+                                            <input id="{{this.path}}" type="range" value="{{this.value}}" min="{{min this.format}}" max="{{max this.format}}" class="tooltippedXXX" data-position="top" data-tooltip="{{this.value}}">
+                                            <label for="{{this.path}}" class="active">{{this.name}}</label>
+                                            {{else}}
+                                            <input id="{{this.path}}" type="text" value="{{this.value}}">
+                                            <label for="{{this.path}}" class="active">{{this.name}}</label>
+                                            {{/if}}
+                                            {{else if (eq this.datatype 'enum')}}
+                                            <select id="{{this.path}}">
+                                                {{#each (split this.format ',')}}
+                                                <option value="{{this}}" {{#if (eq this ..
+                                                /value)}}selected{{/if}}>{{this}}</option>
+                                                {{/each}}
+                                            </select>
+                                            <label>{{this.name}}</label>
+                                            {{else if (eq this.datatype 'boolean')}}
+                                            <div>
+                                                <label>
+                                                    <input type="checkbox" id="{{this.path}}" class="filled-in" {{#if (eq this.value
+                                                    'true')}}checked{{/if}} value="true">
+                                                    <span>{{this.name}}</span>
+                                                </label>
+                                            </div>
+                                            {{else}}
+                                            <div>
+                                                Unsupported property: {{this.name}} type {{this.datatype}} (value {{this.value}})
+                                            </div>
+                                            {{/if}}
+                                        </div>
+                                        {{/if}}
+                                        {{/each}}
+                                    </div>
+                                    <div class="commands-setters">
+                                        {{#each commands}}
+                                        {{#if this.header}}
+                                        <div class="header">{{this.header}}</div>
+                                        {{/if}}
+                                        <a class="waves-effect waves-light btn position-{{this.position}} display-{{this.display}}" id="{{this.path}}" data-type="{{this.datatype}}" data-argname="{{this.argname}}" data-format="{{this.format}}">
+                                            <i class="material-icons left">{{this.icon}}</i>
+                                            {{#if (eq this.display 'DEFAULT')}}
+                                            {{this.name}}
+                                            {{/if}}
+                                        </a>
+                                        {{/each}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{/each}}
+                    {{#if @last}}
+                </div>
+            </div>
+        </li>
+        {{/if}}
+    </ul>
+</script>
+
+
+</body>
+</html>
