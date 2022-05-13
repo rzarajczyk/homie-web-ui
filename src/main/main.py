@@ -48,7 +48,7 @@ ACTIONS = [
 for plugin in PLUGINS:
     ACTIONS += plugin.actions()
 
-server = http_server(80, ACTIONS)
+server = http_server(8080, ACTIONS)
 try:
     server.start(block_caller_thread=True)
 finally:

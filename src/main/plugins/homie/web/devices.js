@@ -76,7 +76,7 @@ $(() => {
             'value': value
         }
         console.log(data)
-        $.post('/set-property', JSON.stringify(data), (response) => {
+        $.post('/homie/set-property', JSON.stringify(data), (response) => {
             console.log(`Async call to set-property finished with response ${response}`)
         }, "json")
     }

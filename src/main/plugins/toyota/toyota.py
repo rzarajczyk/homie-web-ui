@@ -1,4 +1,5 @@
 import requests
+from typing import List
 
 from plugins.plugin import Plugin, Link
 from actions_server import Action, JsonPost, StaticResources, JsonGet
@@ -11,10 +12,10 @@ class ToyotaPlugin(Plugin):
         self.key = config['google-api-key']
         self.root = plugin_root
 
-    def links(self) -> list[Link]:
+    def links(self) -> List[Link]:
         return [Link('Toyota', '/toyota/toyota.html')]
 
-    def actions(self) -> list[Action]:
+    def actions(self) -> List[Action]:
         return [
             JsonGet('/toyota/data', self.data),
             JsonGet('/toyota/apikey', self.api_key),

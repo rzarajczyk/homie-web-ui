@@ -1,3 +1,5 @@
+from typing import List
+
 from plugins.plugin import Plugin
 from actions_server import Action, StaticResources
 
@@ -7,6 +9,6 @@ class TtsPlugin(Plugin):
         Plugin.__init__(self, 'TtsPlugin')
         self.root = plugin_root
 
-    def actions(self) -> list[Action]:
+    def actions(self) -> List[Action]:
         return [StaticResources('/tts', '%s/web' % self.root)]
 

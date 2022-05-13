@@ -1,4 +1,5 @@
 import requests
+from typing import List
 
 from plugins.plugin import Plugin, Link
 from actions_server import Action, JsonPost, StaticResources, JsonGet
@@ -10,10 +11,10 @@ class ScanPlugin(Plugin):
         self.url = config['url']
         self.root = plugin_root
 
-    def links(self) -> list[Link]:
+    def links(self) -> List[Link]:
         return [Link('Scan', '/scan/scan.html')]
 
-    def actions(self) -> list[Action]:
+    def actions(self) -> List[Action]:
         return [
             JsonGet('/scan/ready', self.scanner_ready),
             JsonPost('/scan/scan', self.scan),

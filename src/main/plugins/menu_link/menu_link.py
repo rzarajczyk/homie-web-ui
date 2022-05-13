@@ -1,4 +1,5 @@
 from plugins.plugin import Plugin, Link
+from typing import List
 
 
 class MenuLinkPlugin(Plugin):
@@ -8,5 +9,5 @@ class MenuLinkPlugin(Plugin):
         self.url = config['url']
         self.new_window = config.get('new-window', True)
 
-    def links(self) -> list[Link]:
+    def links(self) -> List[Link]:
         return [Link(self.name, self.url, self.new_window)]

@@ -1,5 +1,7 @@
 import logging
 import json
+from typing import List
+
 import paho.mqtt.client as mqtt
 
 from plugins.homie.devices import Devices
@@ -33,10 +35,10 @@ class HomiePlugin(Plugin):
 
         self.client.loop_start()
 
-    def links(self) -> list[Link]:
+    def links(self) -> List[Link]:
         return [Link('Devices', '/homie/devices.html')]
 
-    def actions(self) -> list[Action]:
+    def actions(self) -> List[Action]:
         return [
             # JsonGet('/scan/ready', self.scanner_ready),
             # JsonPost('/scan/scan', self.scan),
