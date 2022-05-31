@@ -11,10 +11,12 @@ from actions_server import Action, JsonPost, StaticResources, JsonGet
 
 
 class HomiePlugin(Plugin):
-    def __init__(self, config, plugin_root):
+    def __init__(self, config, plugin_root, url_root):
         Plugin.__init__(self, 'HomiePlugin')
         # self.url = config['url']
-        self.root = plugin_root
+        self.root_dir = plugin_root
+        self.root_url = url_root
+        self.name = config['name']
         self.DEVICES_CONFIG = config['devices']
         self.SUBDEVICES = config['subdevices']
 
@@ -36,20 +38,26 @@ class HomiePlugin(Plugin):
         self.client.loop_start()
 
     def links(self) -> List[Link]:
-        return [Link('Devices', '/homie/devices.html')]
+        return [Link(self.name, f'{self.root_url}/devices.html')]
 
     def actions(self) -> List[Action]:
         return [
-            # JsonGet('/scan/ready', self.scanner_ready),
-            # JsonPost('/scan/scan', self.scan),
-            JsonGet('/homie/devices', self.list_devices),
-            JsonPost('/homie/set-property', self.set_property),
-            StaticResources('/homie', '%s/web' % self.root)
+            JsonGet(f'{self.root_url}/init', self.get_init_data),
+            JsonGet(f'{self.root_url}/devices', self.list_devices),
+            JsonPost(f'{self.root_url}/set-property', self.set_property),
+            StaticResources(f'{self.root_url}', f'{self.root_dir}/web')
         ]
+
+    def get_init_data(self, params):
+        return {
+            'root': self.root_url
+        }
 
     def list_devices(self, params):
         devices = Devices(self.tree, self.SUBDEVICES)
         devices.enrich(self.DEVICES_CONFIG)
+        print('Will leave only with IDS: %s' % self.DEVICES_CONFIG.keys())
+        devices.leave_only_ids(self.DEVICES_CONFIG.keys())
         return devices.to_json()
 
     def set_property(self, params, payload):

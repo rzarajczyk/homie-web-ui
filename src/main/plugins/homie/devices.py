@@ -118,6 +118,9 @@ class Devices:
         for node in tree.tree().children():
             self.devices += self.parse_device_node(node)
 
+    def leave_only_ids(self, ids):
+        self.devices = [d for d in self.devices if d.id in ids]
+
     def enrich(self, config):
         for device in self.devices:
             if device.id in config:

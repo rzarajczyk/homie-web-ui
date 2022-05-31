@@ -6,19 +6,20 @@ from actions_server import Action, JsonPost, StaticResources, JsonGet
 
 
 class ScanPlugin(Plugin):
-    def __init__(self, config, plugin_root):
+    def __init__(self, config, plugin_root, url_root):
         Plugin.__init__(self, 'ScanPlugin')
         self.url = config['url']
-        self.root = plugin_root
+        self.root_dir = plugin_root
+        self.root_url = url_root
 
     def links(self) -> List[Link]:
-        return [Link('Scan', '/scan/scan.html')]
+        return [Link('Scan', f'{self.root_url}/scan.html')]
 
     def actions(self) -> List[Action]:
         return [
-            JsonGet('/scan/ready', self.scanner_ready),
-            JsonPost('/scan/scan', self.scan),
-            StaticResources('/scan', '%s/web' % self.root)
+            JsonGet(f'{self.root_url}/ready', self.scanner_ready),
+            JsonPost(f'{self.root_url}/scan', self.scan),
+            StaticResources(f'{self.root_url}', '%s/web' % self.root_dir)
         ]
 
     def scan(self, params, payload):

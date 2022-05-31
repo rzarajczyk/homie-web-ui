@@ -6,21 +6,22 @@ from actions_server import Action, JsonPost, StaticResources, JsonGet
 
 
 class ToyotaPlugin(Plugin):
-    def __init__(self, config, plugin_root):
+    def __init__(self, config, plugin_root, url_root):
         Plugin.__init__(self, 'ToyotaPlugin')
         self.url = config['url']
         self.key = config['google-api-key']
-        self.root = plugin_root
+        self.root_dir = plugin_root
+        self.root_url = url_root
 
     def links(self) -> List[Link]:
-        return [Link('Toyota', '/toyota/toyota.html')]
+        return [Link('Toyota', f'{self.root_url}/toyota.html')]
 
     def actions(self) -> List[Action]:
         return [
-            JsonGet('/toyota/data', self.data),
-            JsonGet('/toyota/apikey', self.api_key),
-            JsonGet('/toyota/trip', self.trip),
-            StaticResources('/toyota', '%s/web' % self.root)
+            JsonGet(f'{self.root_url}/data', self.data),
+            JsonGet(f'{self.root_url}/apikey', self.api_key),
+            JsonGet(f'{self.root_url}/trip', self.trip),
+            StaticResources(f'{self.root_url}', '%s/web' % self.root_dir)
         ]
 
     def api_key(self, params):
@@ -57,14 +58,3 @@ class ToyotaPlugin(Plugin):
             'parking': parking,
             'trips': trips
         }
-
-    # def scan(self, params, payload):
-    #     self.logger.info('Requesting scanner')
-    #     response = requests.post('%s/scan' % self.url)
-    #     response.raise_for_status()
-    #     return response.json()
-    #
-    # def scanner_ready(self, params):
-    #     self.logger.info('Checking scanner readiness')
-    #     response = requests.get('%s/print/info' % self.url)
-    #     return {'ready': response.status_code == 200}

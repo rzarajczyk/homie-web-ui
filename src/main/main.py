@@ -25,7 +25,9 @@ PLUGINS = []
 for plugin_id in PLUGINS_CONFIG:
     plugin_type = PLUGINS_CONFIG[plugin_id]['type']
     plugin_class = PLUGIN_CLASSES[plugin_type]
-    plugin = plugin_class(PLUGINS_CONFIG[plugin_id], './src/main/plugins/%s' % plugin_type.replace('-', '_'))
+    root_dir = './src/main/plugins/%s' % plugin_type.replace('-', '_')
+    root_url = f'/{plugin_id}'
+    plugin = plugin_class(PLUGINS_CONFIG[plugin_id], root_dir, root_url)
     PLUGINS.append(plugin)
 
 
