@@ -140,45 +140,37 @@
 </script>
 
 <script id="device-template" type="x-handlebars-template">
-    <ul id="main-collapsible" class="collapsible no-autoinit">
+    <div>
+        <div class="row">
         {{#each this}}
-        {{#if header}}
-        {{#if @first}}{{else}}</div></div></li>{{/if}}
-        <li>
-            <div class="collapsible-header">
-                <div>{{header}}</div>
-            </div>
-            <div class="collapsible-body">
-                <div class="row">
-                    {{/if}}
-                    <div class="col s6 m4 l3 xl2" id="device-{{id}}">
-                        <div class="card device-card">
-                            <div class="card-image center-align">
-                                <img class="activator" src="{{icon}}">
-                            </div>
-                            <div class="card-content">
-                                <span class="card-title truncate">{{name}}</span>
-                                {{#if (eq state 'alert')}}
-                                <div class="not-ready alert">
-                                    <i class="material-icons">warning</i>
-                                    <p>Device error</p>
-                                </div>
-                                {{/if}}
-                                {{#if (eq state 'init')}}
-                                <div class="not-ready init">
-                                    <i class="material-icons">settings</i>
-                                    <p>Initializing...</p>
-                                </div>
-                                {{/if}}
-                                <div class="properties">
-                                    {{> properties}}
-                                </div>
-                            </div>
-                            <div class="card-reveal">
-                <span class="card-title">
-                    <i class="material-icons right">close</i><span class="actual-title">{{name}}</span>
-                </span>
-                                <div>
+            <div class="col s6 m4 l3 xl2" id="device-{{id}}">
+                <div class="card device-card">
+                    <div class="card-image center-align">
+                        <img class="activator" src="{{icon}}">
+                    </div>
+                    <div class="card-content">
+                        <span class="card-title truncate">{{name}}</span>
+                        {{#if (eq state 'alert')}}
+                        <div class="not-ready alert">
+                            <i class="material-icons">warning</i>
+                            <p>Device error</p>
+                        </div>
+                        {{/if}}
+                        {{#if (eq state 'init')}}
+                        <div class="not-ready init">
+                            <i class="material-icons">settings</i>
+                            <p>Initializing...</p>
+                        </div>
+                        {{/if}}
+                        <div class="properties">
+                            {{> properties}}
+                        </div>
+                    </div>
+                    <div class="card-reveal">
+                        <span class="card-title">
+                            <i class="material-icons right">close</i><span class="actual-title">{{name}}</span>
+                        </span>
+                            <div>
                                     {{#if description}}
                                     <blockquote>{{description}}</blockquote>
                                     {{/if}}
@@ -248,12 +240,8 @@
                         </div>
                     </div>
                     {{/each}}
-                    {{#if @last}}
-                </div>
             </div>
-        </li>
-        {{/if}}
-    </ul>
+    </div>
 </script>
 
 
