@@ -116,7 +116,9 @@ function tripClicked() {
         document.querySelector('#stat-max-speed').innerHTML = `${data.statistics.maxSpeedInKmph} km/h`
         document.querySelector('#stat-avg-speed').innerHTML = `${data.statistics.averageSpeedInKmph} km/h`
         document.querySelector('#stat-total-fuel').innerHTML = `${data.statistics.fuelConsumptionInL} l`
+        document.querySelector('#stat-total-cost').innerHTML = `${data.fuel.priceTripPln} PLN`
         document.querySelector('#stat-avg-fuel').innerHTML = `${data.statistics.averageFuelConsumptionInL} l/100km`
+        document.querySelector('#stat-avg-cost').innerHTML = `${data.fuel['price100kmAvgInPln']} PLN/100km`
         M.Modal.getInstance(document.querySelector('#loading-modal')).close()
     })
 }
