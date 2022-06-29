@@ -5,7 +5,6 @@ from plugins.homie.homie import HomiePlugin
 from plugins.menu_link.menu_link import MenuLinkPlugin
 from plugins.plugin import Link
 from plugins.scan.scan import ScanPlugin
-from plugins.toyota.toyota import ToyotaPlugin
 from plugins.tts.tts import TtsPlugin
 
 config, logger, timezone = start_service()
@@ -16,7 +15,6 @@ PLUGIN_CLASSES = {
     'scan': ScanPlugin,
     'menu-link': MenuLinkPlugin,
     'tts': TtsPlugin,
-    'toyota': ToyotaPlugin,
     'homie': HomiePlugin
 }
 
