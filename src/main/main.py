@@ -1,20 +1,18 @@
 from actions_server import JsonGet, Redirect, StaticResources, http_server
 from bootstrap.bootstrap import start_service
 
+from plugins.statics.statics import StaticsPlugin
 from plugins.homie.homie import HomiePlugin
 from plugins.menu_link.menu_link import MenuLinkPlugin
 from plugins.plugin import Link
-from plugins.scan.scan import ScanPlugin
-from plugins.tts.tts import TtsPlugin
 
 config, logger, timezone = start_service()
 
 PLUGINS_CONFIG = config['plugins']
 
 PLUGIN_CLASSES = {
-    'scan': ScanPlugin,
-    'menu-link': MenuLinkPlugin,
-    'tts': TtsPlugin,
+    'statics': StaticsPlugin,
+    'link': MenuLinkPlugin,
     'homie': HomiePlugin
 }
 
